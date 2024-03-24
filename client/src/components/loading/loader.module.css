@@ -1,0 +1,41 @@
+.loader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.75s, visibility 0.75s;
+}
+
+.loader--hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loader::after {
+    content: "";
+    width: var(--width_height_loader);
+    height: var(--width_height_loader);
+    border: var(--border_loader) solid #dddddd;
+    border-top-color: #ED2B91;
+    border-radius: 50%;
+    animation: loading 0.75s ease infinite;
+}
+
+.loading {
+    display: flex !important;
+    z-index: 10;
+}
+
+@keyframes loading {
+    from {
+        transform: rotate(0turn);
+    }
+
+    to {
+        transform: rotate(1turn);
+    }
+}
