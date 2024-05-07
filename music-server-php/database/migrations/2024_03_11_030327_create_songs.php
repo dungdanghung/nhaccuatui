@@ -13,18 +13,23 @@ return new class extends Migration
     {
         Schema::create('songs', function (Blueprint $table) {
             $table->id();
-            $table->string('song_name');
-            $table->string('song_file');
-            $table->date('date');
+            $table->string('title');
+            $table->string('artists');
+            $table->string('primary_genre');
+            $table->string('secondary_genre');
+            $table->string('composition_copyright');
+            $table->string('record_laber_name');
+            $table->date('originaly_released');
+            $table->string('audio');
+            $table->string('image');
             $table->string('thumbnail');
-            $table->bigInteger('type_id');
-            $table->string('image')->default('song_image');
+            $table->bigInteger('type_id')->nullable();
             $table->enum('status', ['pending', 'accept', 'canceled'])->default('pending');
             $table->bigInteger('user_id');
-            $table->bigInteger('count_heart')->default(0);
-            $table->string('singer');
+            $table->bigInteger('heart')->default(0);
             $table->string('discription')->nullable();
             $table->timestamps();
+            $table->dateTime('delete_ad')->nullable();
         });
     }
 

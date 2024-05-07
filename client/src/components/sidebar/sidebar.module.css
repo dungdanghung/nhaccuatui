@@ -11,6 +11,7 @@
 }
 
 .sidebar__logo {
+    display: flex;
     width: 240px;
     height: 70px;
     background-image: url(../../assets/img/sidebar-icon/logo/logo-dark.svg);
@@ -20,12 +21,14 @@
     background-position-y: 50%;
 }
 
-.sidebar__persional {
+.sidebar__persional,
+.sidebar__managers {
     margin-bottom: 15px;
     position: relative;
 }
 
-.sidebar__persional::after {
+.sidebar__persional::after,
+.sidebar__managers::after {
     content: '';
     width: var(--sidebar-width);
     height: 20px;

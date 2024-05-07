@@ -7,9 +7,11 @@ const devPorts = '3000'
 let baseURL = ''
 let baseIMG = ''
 let baseICON = ''
+let baseSong = ''
 if (devPorts === window.location.port) {
     baseURL = `${window.location.origin.replace(devPorts, '8000')}/api/`
     baseIMG = `${window.location.origin.replace(devPorts, '8000')}/`
+    baseSong = `${window.location.origin.replace(devPorts, '8000')}/uploads/song`
     baseICON = `${window.location.origin.replace(devPorts, '3000')}/`
 }
 else {
@@ -59,6 +61,8 @@ request.interceptors.response.use(
                 if (!response.request.responseURL.includes('getuser') && !ignoreLoaders.includes(response.config.url)) {
                     toast.error(response.data.msg)
                 }
+            } else {
+                return response
             }
         }
     },
@@ -84,6 +88,8 @@ request.interceptors.response.use(
 export {
     baseIMG,
     baseICON,
+    baseURL,
+    baseSong,
     getToken,
     getTokenHeader,
 }

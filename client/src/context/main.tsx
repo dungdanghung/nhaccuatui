@@ -5,17 +5,29 @@ type AppContextType = ReturnType<typeof useAppContextValue>
 const init: unknown = {}
 export const AppContext = createContext<AppContextType>(init as AppContextType)
 
+type song = {
+    'id': number,
+    "title": string,
+    "artists": string,
+    "audio": string,
+    "image": string,
+    "heart": number
+}
+
 function useAppContextValue() {
-    // const sideBarRef = useRef<HTMLDivElement>(null)
-    // const titleRef = useRef<HTMLHeadingElement>(null)
-    // const [language, setLanguage] = useState(languageUtils.getLanguage())
     const [permissions, setPermissions] = useState<string[]>([])
     const [user, setUser] = useState<User | undefined>()
+    const [release_title, set_release_title] = useState<string | undefined>()
+    const [formData, setFormData] = useState<FormData | undefined>()
+    const [song, setSong] = useState<song>();
+    const [playSong, setPlaySong] = useState<boolean>(false)
     return {
-        // DOM: {
-        //     sideBarRef,
-        //     titleRef
-        // },
+        music: {
+            "get": song,
+            "set": setSong,
+            "setplay": setPlaySong,
+            "play": playSong
+        },
         // appLanguage: {
         //     language,
         //     setLanguage
@@ -24,6 +36,10 @@ function useAppContextValue() {
             user,
             setUser
         },
+        song_create: {
+            formData: formData,
+            setFormData: setFormData
+        },
         permissions: {
             items: permissions,
             setItems: setPermissions,
@@ -31,6 +47,10 @@ function useAppContextValue() {
             // hasAnyFormList(permissionsToCheck: string[]) {
             //     return permissionsToCheck.some(permission => permissions.includes(permission))
             // }
+        },
+        release_title: {
+            get: release_title,
+            set: set_release_title
         }
     }
 }

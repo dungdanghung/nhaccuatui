@@ -26,7 +26,7 @@ class AutherController extends Controller
             $token = $user->createToken('Admin-Token')->plainTextToken;
             return Reply::successWithData(["token" => $token], __('messages.successful'));
         } catch (\Throwable $th) {
-            return Reply::error(__('message.something_went_wrong'));
+            return Reply::error(__('messages.something_went_wrong'));
         }
     }
     public function register(Request $request)

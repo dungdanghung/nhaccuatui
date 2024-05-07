@@ -1,51 +1,76 @@
 <?php
 
+/**
+ * Created by Reliese Model.
+ */
+
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Carbon\Carbon;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Authenticatable
+/**
+ * Class User
+ * 
+ * @property int $id
+ * @property string $first_name
+ * @property string $last_name
+ * @property string $user_name
+ * @property Carbon $birth_day
+ * @property string $gender
+ * @property string $status
+ * @property string|null $email
+ * @property string|null $phone_number
+ * @property string $password
+ * @property int $count_follower
+ * @property string $avatar
+ * @property string $avatar_origin
+ * @property string|null $background_image
+ * @property string|null $country
+ * @property string $language
+ * @property string|null $remember_token
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @package App\Models
+ */
+class User extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasRoles;
+    use HasApiTokens, HasFactory, Notifiable;
+    protected $table = 'users';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    protected $casts = [
+        'birth_day' => 'datetime',
+        'count_follower' => 'int'
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token'
+    ];
+
     protected $fillable = [
+        'id',
         'first_name',
         'last_name',
         'user_name',
-        'gender',
         'birth_day',
+        'gender',
+        'status',
         'email',
         'phone_number',
         'password',
-    ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
+        'count_follower',
+        'avatar',
+        'avatar_origin',
+        'background_image',
+        'country',
+        'language',
+        'remember_token'
     ];
 }

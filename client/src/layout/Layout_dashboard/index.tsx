@@ -31,7 +31,7 @@ export default function LayoutDashBoard() {
             <div className={style['wrap_layout']}>
                 <Sidebar />
                 <div className={style['dashboard-content']}>
-                    <Header />
+                    <Header type_header="full" />
                     <Outlet />
                 </div>
                 <PlayList />

@@ -39,6 +39,13 @@
     border: 2px solid var(--white-color);
     background-size: contain;
     cursor: pointer;
+    overflow: hidden;
+
+    img {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+    }
 }
 
 .music-control__left-vetinh {}

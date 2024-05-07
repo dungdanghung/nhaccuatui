@@ -1,0 +1,69 @@
+<?php
+
+/**
+ * Created by Reliese Model.
+ */
+
+namespace App\Models;
+
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * Class Song
+ * 
+ * @property int $id
+ * @property string $title
+ * @property string $artists
+ * @property string|null $language
+ * @property string $primary_genre
+ * @property string $secondary_genre
+ * @property string $composition_copyright
+ * @property string $record_laber_name
+ * @property Carbon $originaly_released
+ * @property string $audio
+ * @property string $image
+ * @property string $thumbnail
+ * @property int|null $type_id
+ * @property string $status
+ * @property int $user_id
+ * @property int $heart
+ * @property string|null $discription
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $delete_ad
+ *
+ * @package App\Models
+ */
+class Song extends Model
+{
+	protected $table = 'songs';
+
+	protected $casts = [
+		'originaly_released' => 'datetime',
+		'type_id' => 'int',
+		'user_id' => 'int',
+		'heart' => 'int',
+		'delete_ad' => 'datetime'
+	];
+
+	protected $fillable = [
+		'title',
+		'artists',
+		'language',
+		'primary_genre',
+		'secondary_genre',
+		'composition_copyright',
+		'record_laber_name',
+		'originaly_released',
+		'audio',
+		'image',
+		'thumbnail',
+		'type_id',
+		'status',
+		'user_id',
+		'heart',
+		'discription',
+		'delete_ad'
+	];
+}
