@@ -313,4 +313,31 @@ class MusicController extends Controller
         }
         return response()->json($format_songs);
     }
+
+    public function getNewSongs(Request $request)
+    {
+        $songs = Song::whereDate('originaly_released', '<=', now()->format('Y-m-d'))
+            ->where('status', 'accept')
+            ->orderBy('originaly_released', 'desc')
+            ->limit(15)
+            ->get();
+
+        $format_songs = [];
+        $format_songs_item = [];
+        foreach ($songs as $song) {
+            array_push($format_songs_item, [
+                'id' => $song->id,
+                'title' => $song->title,
+                'artists' => $song->artists,
+                'audio' => $song->audio,
+                'image' => $song->image,
+                'heart' => $song->heart,
+            ]);
+            if (count($format_songs_item) >= 3) {
+                array_push($format_songs, $format_songs_item);
+                $format_songs_item = [];
+            }
+        }
+        return response()->json($format_songs);
+    }
 }

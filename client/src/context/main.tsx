@@ -14,19 +14,27 @@ type song = {
     "heart": number
 }
 
+export type mv = {
+    'id': number,
+    "title": string,
+    "mv": string,
+    "image": string,
+    "heart": number
+}
+
 function useAppContextValue() {
     const [permissions, setPermissions] = useState<string[]>([])
     const [user, setUser] = useState<User | undefined>()
     const [release_title, set_release_title] = useState<string | undefined>()
     const [formData, setFormData] = useState<FormData | undefined>()
-    const [song, setSong] = useState<song>();
-    const [playSong, setPlaySong] = useState<boolean>(false)
+    const [media, set_media] = useState<mv | song>();
+    const [play, setPlay] = useState<boolean>(false)
     return {
-        music: {
-            "get": song,
-            "set": setSong,
-            "setplay": setPlaySong,
-            "play": playSong
+        media: {
+            "get": media,
+            "set": set_media,
+            "setplay": setPlay,
+            "play": play
         },
         // appLanguage: {
         //     language,
@@ -37,6 +45,10 @@ function useAppContextValue() {
             setUser
         },
         song_create: {
+            formData: formData,
+            setFormData: setFormData
+        },
+        mv_create: {
             formData: formData,
             setFormData: setFormData
         },

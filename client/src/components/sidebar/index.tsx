@@ -107,10 +107,14 @@ export default function Sidebar({ type_sidebar = "main" }) {
                         type_sidebar == "manager" ? <>
                             <div className={style["sidebar__managers"]}>
                                 <ul className={style["sidebar__list"]}>
-                                    <li className={[style["sidebar__item"], style["js__sidebar-tabs"], style["js__main-color sidebar__item--active"]].join(' ')}>
+                                    <Link to={'/manager/music'} className={[style["sidebar__item"], style["js__sidebar-tabs"], style["js__main-color sidebar__item--active"]].join(' ')}>
                                         <i className={["far", "fa-play-circle", style["sidebar__item_icon"]].join(' ')}></i>
                                         Music
-                                    </li>
+                                    </Link>
+                                    <Link to={'/manager/mv'} className={[style["sidebar__item"], style["js__sidebar-tabs"], style["js__main-color sidebar__item--active"]].join(' ')}>
+                                        <i className={["far", "fa-play-circle", style["sidebar__item_icon"]].join(' ')}></i>
+                                        MV
+                                    </Link>
                                 </ul>
                             </div>
                         </> : <></>

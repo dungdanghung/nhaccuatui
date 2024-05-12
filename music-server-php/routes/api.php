@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\AutherController;
 use App\Http\Controllers\api\MusicController;
+use App\Http\Controllers\api\MVController;
 use App\Http\Controllers\api\UserController;
 
 /*
@@ -38,4 +39,16 @@ Route::prefix('/music')->controller(MusicController::class)->group(function () {
     Route::get('/getsong/{name_audio}', 'getSong');
     Route::post('/changestatus', 'statusChange')->middleware('auth:sanctum');
     Route::get('/song-hot', 'getHotSong');
+    Route::get('/new-song', 'getNewSongs');
+});
+
+Route::prefix('/mv')->controller(MVController::class)->group(function () {
+    Route::post('/validate_mv', 'validateMV')->middleware('auth:sanctum');
+    Route::post('/create', 'store')->middleware('auth:sanctum');
+    Route::post('/edit-mv-detail', 'update')->middleware('auth:sanctum');
+    Route::post('/changestatus', 'changeStatus')->middleware('auth:sanctum');
+    Route::get('get-new-mv', 'getNewMV');
+    Route::get('/getmv/{name_audio}', 'getMV');
+    Route::get('get-mv-upload', 'getMvUpload')->middleware('auth:sanctum');
+    route::get('get-mv-detail/{id}', 'getMVDetail')->middleware('auth:sanctum');
 });

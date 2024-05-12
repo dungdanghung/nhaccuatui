@@ -460,6 +460,7 @@
 
 .new_song_item {
     width: 30%;
+    overflow: hidden;
 }
 
 .row_new_songs {

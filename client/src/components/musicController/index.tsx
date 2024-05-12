@@ -5,31 +5,38 @@ import { baseIMG, baseURL } from "../../config/api"
 
 export default function MusicController() {
     const audio = useRef<HTMLAudioElement>(null);
+    const video = useRef<HTMLVideoElement>(null);
     const void_input = useRef<HTMLInputElement>(null);
     const tracktime = useRef<HTMLInputElement>(null);
-    const { music } = useAppContext()
-    const [song, setsong] = useState<any>([]);
+    const { media } = useAppContext()
+    const [Media, set_media] = useState<any>([]);
     const [play, setplay] = useState<boolean>(false)
     const [time, setTime] = useState('00:00')
     const [duration, setduration] = useState('00:00')
     const [allowHandleTracktime, setallowHandleTracktime] = useState(false);
     const [able_action, set_able_action] = useState(false);
+    const [show_video, set_show_video] = useState(false)
 
 
     function btnPlayClick(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
         const a = e.target as HTMLImageElement
         if (a.className.includes('play')) {
             handleVoid
-            music.setplay(true);
+            media.setplay(true);
         } else {
-            music.setplay(false);
+            media.setplay(false);
         }
     }
 
-    function musicPlay(e: React.SyntheticEvent<HTMLAudioElement, Event>) {
-        let songElement = audio.current as HTMLAudioElement;
-        let a = Math.floor(songElement.currentTime / 60) as any
-        let b = Math.floor(songElement.currentTime - a * 60) as any
+    function mediaPlay() {
+        let media;
+        if (Media?.audio) {
+            media = audio.current as HTMLAudioElement;
+        } else {
+            media = video.current as HTMLVideoElement;
+        }
+        let a = Math.floor(media.currentTime / 60) as any
+        let b = Math.floor(media.currentTime - a * 60) as any
         if (a < 10) {
             a = "0" + a
         }
@@ -38,19 +45,24 @@ export default function MusicController() {
         }
         setTime(`${a}:${b}`)
         if (allowHandleTracktime) {
-            let c = songElement.currentTime / songElement.duration * 100 as number
+            let c = media.currentTime / media.duration * 100 as number
             let d = tracktime.current as HTMLInputElement
             d.value = c.toString();
         }
     }
 
-    function tracktimeDown(e: React.MouseEvent<HTMLInputElement, MouseEvent>) {
+    function tracktimeDown() {
         setallowHandleTracktime(false)
     }
 
-    function tracktimeUp(e: React.MouseEvent<HTMLInputElement, MouseEvent>) {
+    function tracktimeUp() {
         const a = document.querySelector("#progress") as HTMLInputElement;
-        const b = document.getElementById("audio") as HTMLAudioElement;
+        let b
+        if (Media?.audio) {
+            b = document.getElementById("audio") as HTMLAudioElement;
+        } else {
+            b = document.getElementById("video") as HTMLVideoElement;
+        }
         const c = b.duration;
         const d = a.value
         const value = (parseInt(d) / 100 * c).toFixed()
@@ -73,49 +85,69 @@ export default function MusicController() {
 
     function handleVoid() {
         const a = void_input.current as HTMLInputElement
-        const b = audio.current as HTMLAudioElement
-        b.volume = parseInt(a.value) / 100
+        if (Media?.audio) {
+            const b = audio.current as HTMLAudioElement
+            b.volume = parseInt(a.value) / 100
+        } else {
+            const b = video.current as HTMLVideoElement
+            b.volume = parseInt(a.value) / 100
+        }
+    }
+
+    function showvideo() {
+        if (show_video) {
+            set_show_video(false)
+        } else {
+            set_show_video(true)
+        }
     }
 
     useEffect(() => {
-        setsong(music.get)
-        if (able_action) {
-            music.setplay(true);
-        }
-    }, [music.get])
+        set_media(media.get)
+    }, [media.get])
 
     useEffect(() => {
         if (able_action) {
-            if (music.play) {
-                audio.current?.play();
+            if (media.play) {
+                if (Media?.audio) {
+                    audio.current?.play();
+                } else {
+                    set_show_video(true)
+                    video.current?.play()
+                }
                 setallowHandleTracktime(true)
                 setplay(true)
             } else {
-                audio.current?.pause()
+                if (Media?.audio) {
+                    audio.current?.pause()
+                } else {
+                    video.current?.pause()
+                }
                 setallowHandleTracktime(false)
                 setplay(false)
             }
         } else {
             set_able_action(true);
         }
-    }, [music.play])
+    }, [media.play])
+
 
     return (
         <div className="main-music-control">
             <div className="row">
-                <div className="col l-3 m-3 s-8">
+                <div className="col l-3 m-3 s-8" style={{ zIndex: '5' }}>
                     <div className="music-control__left">
                         <div className="music-control__left-img-box">
                             <div className="music-control__left-img">
-                                <img className="music-controler-img" src={`${baseIMG}uploads/image/168x94/${song?.image}`}></img>
+                                <img className="music-controler-img" src={`${baseIMG}uploads/image/168x94/${Media?.image}`}></img>
                             </div>
                         </div>
                         <div className="music-control__left-content">
-                            <span className="music-control__left-content-song js__main-color">{song?.title}</span>
+                            <span className="music-control__left-content-song js__main-color">{Media?.title}</span>
                             <span className="music-control__left-content-singer js__sub-color">
                                 {
-                                    song?.artists ?
-                                        JSON.parse(song?.artists).join(' ') : ''
+                                    Media?.artists ?
+                                        JSON.parse(Media?.artists).join(' ') : ''
                                 }
                             </span>
                         </div>
@@ -128,7 +160,7 @@ export default function MusicController() {
                         </div>
                     </div>
                 </div>
-                <div className="col l-6 m-7 s-4 rs__main-music-control-flex-1">
+                <div className="col l-6 m-7 s-4 rs__main-music-control-flex-1" style={{ zIndex: '5' }}>
                     <div className="music-control__center">
                         <div className="music-control__center-action music-control__icon">
 
@@ -149,13 +181,13 @@ export default function MusicController() {
                             <span className="music-control__progress-time-duration js__music-control__progress-time-duration js__main-color">{duration}</span>
                         </div>
                         {
-                            song?.audio ?
-                                <audio id="audio" ref={audio} src={`${baseURL}music/getsong/${song?.audio}`} onTimeUpdate={musicPlay} onEnded={() => music.setplay(false)} onLoadedMetadata={setDuration}></audio> :
+                            Media?.audio ?
+                                <audio id="audio" ref={audio} src={`${baseURL}music/getsong/${Media?.audio}`} onTimeUpdate={mediaPlay} onEnded={() => media.setplay(false)} onLoadedMetadata={setDuration}></audio> :
                                 <></>
                         }
                     </div>
                 </div>
-                <div className="col l-3 m-2 s-0">
+                <div className="col l-3 m-2 s-0" style={{ zIndex: 5 }}>
                     <div className="music-control__right">
                         <i className="music-control__right-icon1 ipad-air-hiden js__main-color js__toast fas fa-photo-video"></i>
                         <i className="music-control__right-icon2 ipad-air-hiden js__main-color js__toast fas fa-microphone"></i>
@@ -168,6 +200,12 @@ export default function MusicController() {
                             <input ref={void_input} id="progress1" className="music-control__volume-input" type="range" step="1" min="0" max="100" defaultValue={30} onChange={handleVoid} />
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <div className="wrap_video" onClick={showvideo} style={{ display: show_video ? 'flex' : 'none' }}>
+                <div className="video">
+                    <video ref={video} id="video" src={`${baseURL}mv/getmv/${Media?.video}`} onTimeUpdate={mediaPlay} onEnded={() => media.setplay(false)} onLoadedMetadata={setDuration} />
                 </div>
             </div>
         </div >

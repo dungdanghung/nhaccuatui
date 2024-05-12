@@ -1,3 +1,35 @@
+.wrap_option_create {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .option_create {
+        display: flex;
+        gap: 60px;
+
+        .mv_option,
+        .song_option {
+            cursor: pointer;
+            height: 250px;
+            width: 350px;
+            background-color: hsla(0, 0%, 100%, 0.1);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 45px;
+            border-radius: 13px;
+        }
+    }
+}
+
+.save_btn {
+    cursor: pointer;
+    background-color: var(--sub-color) !important;
+}
+
 .wrap-content {
     flex: 1;
     display: flex;

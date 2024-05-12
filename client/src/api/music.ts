@@ -1,5 +1,4 @@
 import request from "../config/api";
-import { useAppContext } from "../context";
 
 export async function CreateMusic(formData: any) {
     try {
@@ -68,6 +67,17 @@ export async function SetStatusSong(id: any, status: any) {
 export async function GetHotSongs() {
     try {
         const rs = await request.get("/music/song-hot")
+        if (rs.data) {
+            return rs.data
+        }
+    } catch (error: any) {
+        console.log('\x1b[31m%s\x1b[0m', `err users data: ${error.message}`)
+        throw new Error(error.message);
+    }
+}
+export async function GetNewSongs() {
+    try {
+        const rs = await request.get("/music/new-song")
         if (rs.data) {
             return rs.data
         }

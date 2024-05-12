@@ -10,7 +10,6 @@ import { useAppContext } from "../../context";
 
 export default function Detail() {
     const [song, setsong] = useState<any>([]);
-    const [test, settest] = useState(false);
     const [title, settitle] = useState("");
     const [artists, setartists] = useState([]);
     const [show_image, set_show_image] = useState(false)
@@ -81,23 +80,6 @@ export default function Detail() {
         const c = document.querySelectorAll('.icon-delete .wrap')
         c[c.length - 1].addEventListener('click', deleteArtistInput)
     }
-    function addArtistLyricInput() {
-        const a = document.querySelector(".wrap-lyrics-detail .artist-wrap") as HTMLDivElement
-        const b = `
-        <div class="artist-item">
-        <div class="form-item-2">
-            <input class="lyrics_artist" type="text" name="lyrics_artist[]" />
-            <div class="icon-delete clear">
-                <i class="fas fa-ban"></i>
-                <div class="wrap"></div>
-            </div>
-        </div>
-    </div>
-        `
-        a.insertAdjacentHTML('beforeend', b);
-        const c = document.querySelector(".wrap-lyrics-detail .artist-wrap .artist-item .clear") as HTMLDivElement
-        c.addEventListener('click', deleteArtistInput)
-    }
 
     function deleteArtistInput(e: any) {
         if (e.target.parentElement.parentElement.parentElement.className == "artist-item") {
@@ -105,13 +87,6 @@ export default function Detail() {
         }
     }
 
-    function lyricTrigger(e: any) {
-        if (e.target.id == 'vehicle1') {
-            settest(true)
-        } else {
-            settest(false)
-        }
-    }
 
     function save() {
         const listInput = document.querySelectorAll('input[name]')
@@ -221,58 +196,7 @@ export default function Detail() {
 
                         </div>
                     </div>
-                    {/* <div className="form-item">
-                        <div className="form-item-1">
-                            <span className="text">
-                                Lyrics:
-                            </span>
-                        </div>
-                        <div className="form-item-2">
-                            <div>
-                                <span>
-                                    Does this release contain lyrics?
-                                </span>
-                                <div className="select">
-                                    <div>
-                                        <input type="radio" id="vehicle1" name="vehicle" onClick={lyricTrigger} />
-                                        <label>Yes</label>
-                                    </div>
-                                    <div>
-                                        <input type="radio" id="vehicle2" name="vehicle" defaultChecked onClick={lyricTrigger} />
-                                        <label>No</label>
-                                    </div>
-                                </div>
-                                {
-                                    test ? <>  <div className="wrap-lyrics-detail">
-                                        <div className="form-item">
-                                            <div className="form-item-2">
-                                                <input className="lyric_input" type="file" name="lyric_input" />
-                                            </div>
-                                        </div>
 
-                                        <div className="form-item">
-                                            <div>
-                                                <span>Artist Name</span>
-                                                <div className="artist-wrap">
-                                                    <div className="artist-item">
-                                                        <div className="form-item-2">
-                                                            <input className="lyrics_artist" type="text" name="lyrics_artist[]" />
-                                                            <div className="icon" onClick={addArtistLyricInput}>
-                                                                <i className="fas fa-plus"></i>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    </> :
-                                        <></>
-                                }
-
-                            </div>
-                        </div>
-                    </div> */}
                     <div className="form-item">
                         <div className="form-item-1">
                             <span className="text">

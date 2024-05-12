@@ -1,19 +1,30 @@
 import { useAppContext } from "../../context"
 import "./home_content.css"
-import { GetHotSongs } from "../../api/music"
+import { GetHotSongs, GetNewSongs } from "../../api/music"
+import { GetListNewMV } from "../../api/mv"
 import { useEffect, useState, useRef } from "react"
 import { baseIMG } from "../../config/api"
 import PackageSlice from "@danghung_dung/slice_item2"
 
 export default function Home() {
     const [hot_songs, set_hot_songs] = useState([]);
-    const { music } = useAppContext()
+    const [new_songs, set_new_songs] = useState([]);
+    const [new_mv, set_new_mv] = useState([]);
+    const { media } = useAppContext()
     const slicehotthumbnailsong = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         GetHotSongs()
             .then((rs) => {
                 set_hot_songs(rs);
+            })
+        GetNewSongs()
+            .then((rs) => {
+                set_new_songs(rs);
+            })
+        GetListNewMV()
+            .then((rs) => {
+                set_new_mv(rs);
             })
     }, [])
     useEffect(() => {
@@ -50,6 +61,7 @@ export default function Home() {
 
         PackageSlice(slicehotthumbnailsong.current, 3, 5, 0.7, 'ease')
     }, [hot_songs])
+
 
     return (
         <>
@@ -116,22 +128,22 @@ export default function Home() {
                                             {
                                                 hot_songs.map((item) => {
                                                     return (
-                                                        <li key={item['id']} className={`songs-item ${music.get?.id == item['id'] ? 'songs-item--active' : ''}`} data-index={item['id']}>
+                                                        <li key={item['id']} className={`songs-item ${media.get?.id == item['id'] ? 'songs-item--active' : ''}`} data-index={item['id']}>
                                                             <div className="songs-item-left">
                                                                 <div style={{ backgroundImage: `url(${baseIMG}uploads/image/168x94/${item['image']})` }} className="songs-item-left-img js__songs-item-left-img-0"
                                                                     onClick={() => {
-                                                                        if (music.get?.id != item['id']) {
-                                                                            music.set(item)
-                                                                        } else if (music.play) {
-                                                                            music.setplay(false)
+                                                                        if (media.get?.id != item['id']) {
+                                                                            media.set(item)
+                                                                        } else if (media.play) {
+                                                                            media.setplay(false)
                                                                         } else {
-                                                                            music.setplay(true);
+                                                                            media.setplay(true);
                                                                         }
                                                                     }}
                                                                 >
                                                                     {
-                                                                        music.get?.id == item['id'] ?
-                                                                            music.play ?
+                                                                        media.get?.id == item['id'] ?
+                                                                            media.play ?
                                                                                 <div className="songs-item-left-img-playing-box">
                                                                                     <img className="songs-item-left-img-playing" src="/src/assets/img/svg/icon-playing.gif" alt="playing" />
                                                                                 </div> : <div className="songs-item-left-img-playbtn"><i className="fas fa-play"></i></div> :
@@ -141,7 +153,7 @@ export default function Home() {
 
                                                                 <div className="songs-item-left-body">
                                                                     <h3 className="songs-item-left-body-name js__main-color">{item['title']}</h3>
-                                                                    <span className="songs-item-left-body-singer js__sub-color">{item['artists']}</span>
+                                                                    <span className="songs-item-left-body-singer js__sub-color">{JSON.parse(item['artists']).join(' ')}</span>
                                                                 </div>
                                                             </div>
 
@@ -175,102 +187,51 @@ export default function Home() {
                                 </div>
                             </div>
                             <ul className="option-all__playlist-list">
-                                <div className="row row_new_songs">
-                                    <li className="new_song_item songs-item songs-item--active">
-                                        <div className="songs-item-left">
-                                            <img src="./assets/img/songs/0.webp" alt="danh sanh nhac" className="songs-item-left-img" />
-                                            <div className="songs-item-left-body">
-                                                <h3 className="songs-item-left-body-name">Cưới Luôn Được Không</h3>
-                                                <span className="songs-item-left-body-singer">Út Nhị x KenPham Remix</span>
-                                                <span className="songs-item-left-body-singer">1 ngày trước</span>
+                                {
+                                    new_songs.map((item: any, index) => {
+                                        return (
+                                            <div key={index} className="row row_new_songs">
+                                                {
+                                                    item.map((item2: any) => {
+                                                        return (
+                                                            <li key={item2['id']} className="new_song_item songs-item songs-item--active">
+                                                                <div className="songs-item-left">
+                                                                    <div style={{ backgroundImage: `url(${baseIMG}uploads/image/168x94/${item2['image']})` }} className="songs-item-left-img js__songs-item-left-img-0"
+                                                                        onClick={() => {
+                                                                            if (media.get?.id != item2['id']) {
+                                                                                media.set(item2)
+                                                                            } else if (media.play) {
+                                                                                media.setplay(false)
+                                                                            } else {
+                                                                                media.setplay(true);
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        {
+                                                                            media.get?.id == item2['id'] ?
+                                                                                media.play ?
+                                                                                    <div className="songs-item-left-img-playing-box">
+                                                                                        <img className="songs-item-left-img-playing" src="/src/assets/img/svg/icon-playing.gif" alt="playing" />
+                                                                                    </div> : <div className="songs-item-left-img-playbtn"><i className="fas fa-play"></i></div> :
+                                                                                <div className="songs-item-left-img-playbtn"><i className="fas fa-play"></i></div>
+                                                                        }
+                                                                    </div>
+
+                                                                    <div className="songs-item-left-body">
+                                                                        <h3 className="songs-item-left-body-name js__main-color">{item2['title']}</h3>
+                                                                        <span className="songs-item-left-body-singer js__sub-color">{JSON.parse(item2['artists']).join(' ')}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </li>
+                                                        )
+                                                    })
+                                                }
                                             </div>
-                                        </div>
-                                    </li>
-                                    <li className="new_song_item songs-item songs-item--active">
-                                        <div className="songs-item-left">
-                                            <img src="./assets/img/songs/0.webp" alt="danh sanh nhac" className="songs-item-left-img" />
-                                            <div className="songs-item-left-body">
-                                                <h3 className="songs-item-left-body-name">Cưới Luôn Được Không</h3>
-                                                <span className="songs-item-left-body-singer">Út Nhị x KenPham Remix</span>
-                                                <span className="songs-item-left-body-singer">1 ngày trước</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li className="new_song_item songs-item songs-item--active">
-                                        <div className="songs-item-left">
-                                            <img src="./assets/img/songs/0.webp" alt="danh sanh nhac" className="songs-item-left-img" />
-                                            <div className="songs-item-left-body">
-                                                <h3 className="songs-item-left-body-name">Cưới Luôn Được Không</h3>
-                                                <span className="songs-item-left-body-singer">Út Nhị x KenPham Remix</span>
-                                                <span className="songs-item-left-body-singer">1 ngày trước</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </div>
-                                <div className="row row_new_songs">
-                                    <li className="new_song_item songs-item songs-item--active">
-                                        <div className="songs-item-left">
-                                            <img src="./assets/img/songs/0.webp" alt="danh sanh nhac" className="songs-item-left-img" />
-                                            <div className="songs-item-left-body">
-                                                <h3 className="songs-item-left-body-name">Cưới Luôn Được Không</h3>
-                                                <span className="songs-item-left-body-singer">Út Nhị x KenPham Remix</span>
-                                                <span className="songs-item-left-body-singer">1 ngày trước</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li className="new_song_item songs-item songs-item--active">
-                                        <div className="songs-item-left">
-                                            <img src="./assets/img/songs/0.webp" alt="danh sanh nhac" className="songs-item-left-img" />
-                                            <div className="songs-item-left-body">
-                                                <h3 className="songs-item-left-body-name">Cưới Luôn Được Không</h3>
-                                                <span className="songs-item-left-body-singer">Út Nhị x KenPham Remix</span>
-                                                <span className="songs-item-left-body-singer">1 ngày trước</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li className="new_song_item songs-item songs-item--active">
-                                        <div className="songs-item-left">
-                                            <img src="./assets/img/songs/0.webp" alt="danh sanh nhac" className="songs-item-left-img" />
-                                            <div className="songs-item-left-body">
-                                                <h3 className="songs-item-left-body-name">Cưới Luôn Được Không</h3>
-                                                <span className="songs-item-left-body-singer">Út Nhị x KenPham Remix</span>
-                                                <span className="songs-item-left-body-singer">1 ngày trước</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </div>
-                                <div className="row row_new_songs">
-                                    <li className="new_song_item songs-item songs-item--active">
-                                        <div className="songs-item-left">
-                                            <img src="./assets/img/songs/0.webp" alt="danh sanh nhac" className="songs-item-left-img" />
-                                            <div className="songs-item-left-body">
-                                                <h3 className="songs-item-left-body-name">Cưới Luôn Được Không</h3>
-                                                <span className="songs-item-left-body-singer">Út Nhị x KenPham Remix</span>
-                                                <span className="songs-item-left-body-singer">1 ngày trước</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li className="new_song_item songs-item songs-item--active">
-                                        <div className="songs-item-left">
-                                            <img src="./assets/img/songs/0.webp" alt="danh sanh nhac" className="songs-item-left-img" />
-                                            <div className="songs-item-left-body">
-                                                <h3 className="songs-item-left-body-name">Cưới Luôn Được Không</h3>
-                                                <span className="songs-item-left-body-singer">Út Nhị x KenPham Remix</span>
-                                                <span className="songs-item-left-body-singer">1 ngày trước</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li className="new_song_item songs-item songs-item--active">
-                                        <div className="songs-item-left">
-                                            <img src="./assets/img/songs/0.webp" alt="danh sanh nhac" className="songs-item-left-img" />
-                                            <div className="songs-item-left-body">
-                                                <h3 className="songs-item-left-body-name">Cưới Luôn Được Không</h3>
-                                                <span className="songs-item-left-body-singer">Út Nhị x KenPham Remix</span>
-                                                <span className="songs-item-left-body-singer">1 ngày trước</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </div>
+                                        )
+                                    })
+                                }
+
+
                             </ul>
                         </div>
 
@@ -336,69 +297,39 @@ export default function Home() {
                             </div>
                             <ul className="option-all__playlist-list">
                                 <div className="row">
-                                    <div className="col l-4 m-4 s-12 mobile-margin-bot-30px">
-                                        <li className="option-all__playlist-item">
-                                            <div className="option-all__playlist-item-img-wrapper">
-                                                <div className="option-all__playlist-item-img-wrapper-action">
-                                                    <i
-                                                        className="fas fa-play option-all__playlist-item-img-wrapper-action-icon2"></i>
+
+                                    {
+                                        new_mv.map((item) => {
+                                            return (
+                                                <div key={item['id']} className="col l-4 m-4 s-12 mobile-margin-bot-30px">
+                                                    <li className="option-all__playlist-item">
+                                                        <div className="option-all__playlist-item-img-wrapper" onClick={() => {
+                                                            media.set(item)
+                                                            media.play
+                                                        }}>
+                                                            <div className="option-all__playlist-item-img-wrapper-action">
+                                                                <i
+                                                                    className="fas fa-play option-all__playlist-item-img-wrapper-action-icon2"></i>
+                                                            </div>
+                                                            <div className="option-all__playlist-item-img option-all__playlist-item-img-mv" style={{ backgroundImage: `url(${baseIMG}uploads/image/336x188/${item['image']})` }}></div>
+                                                        </div>
+                                                        <div className="option-all__playlist-item-content-mv">
+                                                            <img src={`${baseIMG}uploads/image/336x188/${item['image']}`} alt="thanh hung"
+                                                                className="option-all__playlist-item-content-img" />
+                                                            <div className="option-all__playlist-item-content-name">
+                                                                <div className="option-all__playlist-item-content-name1 js__main-color">
+                                                                    {item['title']}</div>
+                                                                <div className="option-all__playlist-item-content-name2 js__sub-color">
+                                                                    Thanh Hưng</div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
                                                 </div>
-                                                <div className="option-all__playlist-item-img option-all__playlist-item-img-mv"></div>
-                                            </div>
-                                            <div className="option-all__playlist-item-content-mv">
-                                                <img src="./assets/img/mv/icon1.jpg" alt="thanh hung"
-                                                    className="option-all__playlist-item-content-img" />
-                                                <div className="option-all__playlist-item-content-name">
-                                                    <div className="option-all__playlist-item-content-name1 js__main-color">
-                                                        Thay Tôi Yêu Cô Ấy</div>
-                                                    <div className="option-all__playlist-item-content-name2 js__sub-color">
-                                                        Thanh Hưng</div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </div>
-                                    <div className="col l-4 m-4 s-12 mobile-margin-bot-30px">
-                                        <li className="option-all__playlist-item">
-                                            <div className="option-all__playlist-item-img-wrapper">
-                                                <div className="option-all__playlist-item-img-wrapper-action">
-                                                    <i
-                                                        className="fas fa-play option-all__playlist-item-img-wrapper-action-icon2"></i>
-                                                </div>
-                                                <div className="option-all__playlist-item-img option-all__playlist-item-img-mv"></div>
-                                            </div>
-                                            <div className="option-all__playlist-item-content-mv">
-                                                <img src="./assets/img/mv/icon2.jpg" alt="Han Sara"
-                                                    className="option-all__playlist-item-content-img" />
-                                                <div className="option-all__playlist-item-content-name">
-                                                    <div className="option-all__playlist-item-content-name1 js__main-color">
-                                                        Đếm Cừu</div>
-                                                    <div className="option-all__playlist-item-content-name2 js__sub-color">
-                                                        Han Sara, Kay Trần</div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </div>
-                                    <div className="col l-4 m-4 s-12 mobile-margin-bot-30px">
-                                        <li className="option-all__playlist-item">
-                                            <div className="option-all__playlist-item-img-wrapper">
-                                                <div className="option-all__playlist-item-img-wrapper-action">
-                                                    <i
-                                                        className="fas fa-play option-all__playlist-item-img-wrapper-action-icon2"></i>
-                                                </div>
-                                                <div className="option-all__playlist-item-img option-all__playlist-item-img-mv"></div>
-                                            </div>
-                                            <div className="option-all__playlist-item-content-mv">
-                                                <img src="./assets/img/mv/icon3.jpg" alt="Alex Sensation"
-                                                    className="option-all__playlist-item-content-img" />
-                                                <div className="option-all__playlist-item-content-name">
-                                                    <div className="option-all__playlist-item-content-name1 js__main-color">
-                                                        Que Va</div>
-                                                    <div className="option-all__playlist-item-content-name2 js__sub-color">
-                                                        Alex Sensation, Ozuna</div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </div>
+                                            )
+                                        })
+                                    }
+
+
                                 </div>
                             </ul>
                         </div>

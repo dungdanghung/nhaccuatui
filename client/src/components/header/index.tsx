@@ -157,9 +157,9 @@ export default function Header({ type_header = "full" }) {
                         </ul>
                     </div>
 
-                    <div className="header__upload wrap-avatar">
+                    <Link to={'/profile'} className="header__upload wrap-avatar">
                         <img src={`${baseIMG}img/avatar/${user.user?.avatar}`} alt="user" className="header__user-img" />
-                    </div>
+                    </Link>
                 </div>
             </div>
         </div>
