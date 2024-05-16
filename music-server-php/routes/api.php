@@ -26,6 +26,8 @@ Route::prefix('/auth')->controller(AutherController::class)->group(function () {
 });
 Route::prefix('/user')->controller(UserController::class)->group(function () {
     Route::get('/', 'index')->middleware('auth:sanctum');
+    Route::post('change-avatar', 'setAvatar')->middleware('auth:sanctum');
+    Route::post('change-background', 'setBackground')->middleware('auth:sanctum');
 });
 Route::prefix('/music')->controller(MusicController::class)->group(function () {
     Route::post('/validate_audio', 'validateFileAudio')->middleware('auth:sanctum');
