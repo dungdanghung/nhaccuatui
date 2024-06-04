@@ -60,10 +60,20 @@ class Song extends Model
 		'image',
 		'thumbnail',
 		'type_id',
+		'lyric_file',
 		'status',
 		'user_id',
 		'heart',
 		'discription',
 		'delete_ad'
 	];
+
+	public function interact_heart()
+	{
+		return $this->hasMany(InteractSong::class, 'song_id', 'id');
+	}
+	public function playlist()
+	{
+		return $this->hasMany(PlayList::class, 'song_id', 'id');
+	}
 }

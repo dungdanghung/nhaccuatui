@@ -15,16 +15,22 @@ const Add_artwork = lazy(() => import("./pages/create/add_artwork"))
 const Manager_stores = lazy(() => import("./pages/create/manager_stores"))
 const Manager_music = lazy(() => import("./pages/manager/music"))
 const Manager_mv = lazy(() => import("./pages/manager/mv"))
-const Explore = lazy(() => import("./pages/explore/index"))
-const MV_detail = lazy(() => import('./pages/manager/mv_detail'))
+const Library = lazy(() => import("./pages/Library/index"))
+const MV_detail = lazy(() => import('./pages/create/mv_detail'))
+const Follow = lazy(() => import('./pages/follow/index'))
+const Radio = lazy(() => import('./pages/radio/index'))
+const Zingchart = lazy(() => import('./pages/zingchart/index'))
+const Search = lazy(() => import('./pages/search/index'))
 const Profile = lazy(() => import('./pages/profile/index'))
 const Add_mv = lazy(() => import('./pages/create/add_mv'))
+const Song_detail = lazy(() => import('./pages/song-detail/index'))
 import LayoutDashBoard from './layout/Layout_dashboard'
 import LayoutOnlyHearder from "./layout/only_header"
 import Add_lyric from "./pages/create/add_lyric"
 import LayoutManager from "./layout/layout_manager"
 import "./grid.css"
 import Detail from "./pages/manager/detail"
+import LayoutProfile from "./layout/Layout_profile"
 
 const router = createBrowserRouter([
   {
@@ -52,8 +58,28 @@ const router = createBrowserRouter([
             element: <Suspense fallback={<Loader display={true} />}><Home /></Suspense>,
           },
           {
-            path: 'explore',
-            element: <Suspense fallback={<Loader display={true} />}><Explore /></Suspense>,
+            path: 'library',
+            element: <Suspense fallback={<Loader display={true} />}><Library /></Suspense>,
+          },
+          {
+            path: 'zingchart',
+            element: <Suspense fallback={<Loader display={true} />}><Zingchart /></Suspense>,
+          },
+          {
+            path: 'radio',
+            element: <Suspense fallback={<Loader display={true} />}><Radio /></Suspense>,
+          },
+          {
+            path: 'follow',
+            element: <Suspense fallback={<Loader display={true} />}><Follow /></Suspense>,
+          },
+          {
+            path: 'search?',
+            element: <Suspense fallback={<Loader display={true} />}><Search /></Suspense>,
+          },
+          {
+            path: 'song-detail?',
+            element: <Suspense fallback={<Loader display={true} />}><Song_detail /></Suspense>,
           },
         ]
       },
@@ -118,6 +144,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'profile',
+        element: <LayoutProfile />,
         children: [
           {
             index: true,

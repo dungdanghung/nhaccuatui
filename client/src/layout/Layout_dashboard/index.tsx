@@ -9,14 +9,14 @@ import MusicController from "../../components/musicController"
 import PlayList from "../../components/playList"
 
 export default function LayoutDashBoard() {
-    const { user, permissions } = useAppContext()
+    const { user } = useAppContext()
     const [checking, setChecking] = useState(true)
     const navigate = useNavigate()
     useEffect(() => {
         GetUser()
             .then(rs => {
                 user.setUser(rs.user)
-                permissions.setItems(rs.permissions)
+                // permissions.setItems(rs.permissions)
                 setChecking(false)
                 document.querySelector('.pre-load-container')?.classList.add('hide')
             })

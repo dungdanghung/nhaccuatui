@@ -86,3 +86,83 @@ export async function GetNewSongs() {
         throw new Error(error.message);
     }
 }
+export async function upLoad() {
+    try {
+        const rs = await request.get("/music/new-song")
+        if (rs.data) {
+            return rs.data
+        }
+    } catch (error: any) {
+        console.log('\x1b[31m%s\x1b[0m', `err users data: ${error.message}`)
+        throw new Error(error.message);
+    }
+}
+
+export async function GetZingchart() {
+    try {
+        const rs = await request.get("/music/zingchart")
+        if (rs.data) {
+            return rs.data
+        }
+    } catch (error: any) {
+        console.log('\x1b[31m%s\x1b[0m', `err users data: ${error.message}`)
+        throw new Error(error.message);
+    }
+}
+
+
+export async function AddHeart(id: number) {
+    try {
+        await request.post("/music/add-heart", { 'song_id': id })
+    } catch (error: any) {
+        console.log('\x1b[31m%s\x1b[0m', `err users data: ${error.message}`)
+    }
+}
+
+export async function GetMySongUpload() {
+    try {
+        const rs = await request.get("/music/my-song-upload")
+        if (rs.data) {
+            return rs.data
+        }
+    } catch (error: any) {
+        console.log('\x1b[31m%s\x1b[0m', `err users data: ${error.message}`)
+        throw new Error(error.message);
+    }
+}
+
+export async function Search(value = '') {
+    try {
+        const rs = await request.get("/music/search/" + value)
+        if (rs.data) {
+            return rs.data
+        }
+    } catch (error: any) {
+        console.log('\x1b[31m%s\x1b[0m', `err users data: ${error.message}`)
+        throw new Error(error.message);
+    }
+}
+
+
+export async function SearchSong(value: any) {
+    try {
+        const rs = await request.get("/music/search-song/" + value)
+        if (rs.data) {
+            return rs.data
+        }
+    } catch (error: any) {
+        console.log('\x1b[31m%s\x1b[0m', `err users data: ${error.message}`)
+        throw new Error(error.message);
+    }
+}
+export async function GetLyric(value: any) {
+    try {
+        const rs = await request.get("/music/get-lyric/" + value)
+        if (rs.data) {
+            return rs.data
+        }
+    } catch (error: any) {
+        console.log('\x1b[31m%s\x1b[0m', `err users data: ${error.message}`)
+        throw new Error(error.message);
+    }
+}

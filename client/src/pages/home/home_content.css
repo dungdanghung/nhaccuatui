@@ -154,6 +154,9 @@
     background-size: contain;
     display: flex;
     object-fit: cover;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
 }
 
 .songs-item-left-img-playbtn {

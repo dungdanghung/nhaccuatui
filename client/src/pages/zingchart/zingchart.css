@@ -1,0 +1,195 @@
+.content {
+    flex: 1;
+    position: relative;
+}
+
+.main_content {
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.wrap_playlist,
+.wrap_heart {
+    position: relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        top: 0;
+        left: 0;
+        z-index: 2;
+    }
+}
+
+.main-container-zingchart {
+    /* background-color: green; */
+    margin-top: 90px;
+    padding: 0px 80px 0 80px;
+}
+
+.zingchart__headding {
+    font-size: 4rem;
+    font-weight: 700;
+    color: #fff;
+    display: flex;
+    padding: 20px 0;
+    margin-bottom: 30px;
+}
+
+.zingchart__item-left-stt {
+    color: rgba(74, 144, 226, 0);
+    font-size: 4rem;
+    font-weight: 700;
+    width: 50px;
+    text-align: center;
+    display: block;
+    margin: 0 6px 0 8px;
+    -webkit-text-stroke: 1.5px #fff;
+}
+
+.zingchart__item-first {
+    -webkit-text-stroke: 1.5px #4a90e2;
+}
+
+.zingchart__item-second {
+    -webkit-text-stroke: 1.5px #50e3c2;
+}
+
+.zingchart__item-third {
+    -webkit-text-stroke: 1.5px #e35050;
+}
+
+.zingchart__item-left-line {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 4rem;
+    margin-right: 8px;
+}
+
+.zingchart__100more {
+    display: flex;
+    justify-content: center;
+    margin: 24px 0 80px 0;
+}
+
+.zingchart__100more-body {
+    color: #fff;
+    font-size: 1.4rem;
+    font-weight: 500;
+    border-radius: 50px;
+    width: 134px;
+    height: 38px;
+    border: 1px solid #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.zingchart__100more span:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.zingchart-week__item-wrapper {
+    border-radius: 16px;
+    background-color: hsla(0, 0%, 100%, 0.05);
+    display: flex;
+    flex-direction: column;
+    padding: 22px 12px 22px 10px;
+    margin-bottom: 40px;
+}
+
+.zingchart-week__headding {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #fff;
+    padding: 6px 0 0 20px;
+}
+
+.zingchart-week__item {
+    display: flex;
+    align-items: center;
+    height: 60px;
+    border-radius: 5px;
+}
+
+.zingchart-week__item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.zingchart-week__item-left {
+    display: flex;
+    align-items: center;
+}
+
+.zingchart-week__item-left-stt {
+    width: 26px;
+}
+
+.zingchart-week__item-left-line {}
+
+
+.zingchart-week__item-center {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.zingchart-week__item-center-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.zingchart-week__item-center-content {
+    width: 80%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.zingchart-week__item-center-content-name {
+    color: #fff;
+    font-size: 1.4rem;
+    font-weight: 500;
+    padding: 0;
+    margin: 0;
+    padding-bottom: 5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    cursor: default;
+}
+
+.zingchart-week__item-center-content-singer {
+    font-size: 1.2rem;
+    font-weight: 500;
+    padding-top: 5px;
+    margin: 0;
+    padding: 0;
+    color: rgba(255, 255, 255, 0.5);
+    width: 95%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    cursor: default;
+}
+
+.zingchart-week__item-right {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.2rem;
+    font-weight: 500;
+    padding-right: 10px;
+}
+
+.zingchart-week__100more {
+    margin: 0;
+}

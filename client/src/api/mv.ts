@@ -2,7 +2,6 @@ import request from "../config/api";
 
 export async function CreateMv(formData: any) {
     try {
-
         const rs = await request.post("/mv/create", formData)
         if (rs?.data.success) {
             return true

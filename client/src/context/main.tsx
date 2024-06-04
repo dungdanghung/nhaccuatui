@@ -6,29 +6,56 @@ const init: unknown = {}
 export const AppContext = createContext<AppContextType>(init as AppContextType)
 
 type song = {
-    'id': number,
-    "title": string,
-    "artists": string,
-    "audio": string,
-    "image": string,
-    "heart": number
+    'id': number | undefined,
+    "title": string | undefined,
+    "artists": string | undefined,
+    "audio": string | undefined,
+    "image": string | undefined,
+    "heart": number | undefined
+    'lyric_file': string | undefined
+    'composition_copyright': string | undefined
+    "check_heart": boolean,
+    "originaly_released": string | undefined
+    "check_playlist": boolean,
 }
 
 export type mv = {
-    'id': number,
-    "title": string,
+    'id': number | undefined,
+    "title": string | undefined,
     "mv": string,
-    "image": string,
-    "heart": number
+    "image": string | undefined,
+    "heart": number | undefined
+    'lyric_file': string | undefined
+    'composition_copyright': string | undefined
+    "artists": string | undefined,
+    "check_heart": boolean,
+    "originaly_released": string | undefined
+    "check_playlist": boolean | undefined,
+}
+
+export type post = {
+    "id": number,
+    "media": string | undefined,
+    "image": string | undefined,
+    "text_content": string | undefined,
+    "create_time": string,
+    "avatar": string,
+    "user_name": string,
+    "heart": number,
+    "count_of_share": number,
+    "count_of_comment": number,
+    "check_heart": boolean,
 }
 
 function useAppContextValue() {
-    const [permissions, setPermissions] = useState<string[]>([])
     const [user, setUser] = useState<User | undefined>()
     const [release_title, set_release_title] = useState<string | undefined>()
     const [formData, setFormData] = useState<FormData | undefined>()
     const [media, set_media] = useState<mv | song>();
     const [play, setPlay] = useState<boolean>(false)
+    const [post, setPost] = useState<post>({} as post)
+    const [comment, setComment] = useState([])
+    const [lyric_active, setLyric_active] = useState<number | null>()
     return {
         media: {
             "get": media,
@@ -36,10 +63,12 @@ function useAppContextValue() {
             "setplay": setPlay,
             "play": play
         },
-        // appLanguage: {
-        //     language,
-        //     setLanguage
-        // },
+        post: {
+            'get': post,
+            'set': setPost,
+            'comment': comment,
+            'setComment': setComment
+        },
         user: {
             user,
             setUser
@@ -52,13 +81,9 @@ function useAppContextValue() {
             formData: formData,
             setFormData: setFormData
         },
-        permissions: {
-            items: permissions,
-            setItems: setPermissions,
-            // has: (name: string) => permissions.includes(name),
-            // hasAnyFormList(permissionsToCheck: string[]) {
-            //     return permissionsToCheck.some(permission => permissions.includes(permission))
-            // }
+        lyric_active: {
+            get: lyric_active,
+            set: setLyric_active
         },
         release_title: {
             get: release_title,

@@ -105,7 +105,7 @@ export default function Manager_mv() {
                                 <div style={{ position: "relative" }}>
                                     <div className="header">
                                         <div className="text">
-                                            Thư viện</div><button className="zm-btn button">
+                                            Quản lý MV</div><button className="zm-btn button">
                                             <i className="icon">
                                                 <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
                                                     <g filter="url(#filter0_d_3141_46346)">

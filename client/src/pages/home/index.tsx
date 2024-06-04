@@ -5,6 +5,8 @@ import { GetListNewMV } from "../../api/mv"
 import { useEffect, useState, useRef } from "react"
 import { baseIMG } from "../../config/api"
 import PackageSlice from "@danghung_dung/slice_item2"
+import { AddHeart } from "../../api/music"
+import { Create } from "../../api/playlist"
 
 export default function Home() {
     const [hot_songs, set_hot_songs] = useState([]);
@@ -12,6 +14,34 @@ export default function Home() {
     const [new_mv, set_new_mv] = useState([]);
     const { media } = useAppContext()
     const slicehotthumbnailsong = useRef<HTMLDivElement>(null);
+
+
+    function heart_click(id: number) {
+        return (e: any) => {
+            AddHeart(id)
+            const heart = e.target as HTMLImageElement
+            if (heart.className.includes('fas')) {
+                heart.classList.remove('fas')
+                heart.classList.add('far')
+            } else {
+                heart.classList.remove('far')
+                heart.classList.add('fas')
+            }
+        }
+    }
+    function addPlaylist(id: number) {
+        return (e: any) => {
+            Create(id)
+            const heart = e.target as HTMLImageElement
+            if (heart.className.includes('fas')) {
+                heart.classList.remove('fas')
+                heart.classList.add('far')
+            } else {
+                heart.classList.remove('far')
+                heart.classList.add('fas')
+            }
+        }
+    }
 
     useEffect(() => {
         GetHotSongs()
@@ -122,7 +152,7 @@ export default function Home() {
                                     </div>
                                 </div>
 
-                                <div className="col l-9 m-12 s-12">
+                                <div className="col l-9 m-12 s-12" style={{ zIndex: '6' }}>
                                     <div className="option-all__songs">
                                         <ul className="option-all__songs-list songs-list">
                                             {
@@ -157,14 +187,22 @@ export default function Home() {
                                                                 </div>
                                                             </div>
 
-                                                            <div className="songs-item-right mobile-hiden ">
-                                                                <span className="songs-item-right-mv ipad-air-hiden"><i className="fas fa-photo-video js__main-color"></i></span>
-                                                                <span className="songs-item-right-lyric ipad-air-hiden"><i className="fas fa-microphone js__main-color"></i></span>
-                                                                <span className="songs-item-right-tym">
-                                                                    <i className="fas fa-heart songs-item-right-tym-first"></i>
-                                                                    <i className="far fa-heart songs-item-right-tym-last"></i>
+                                                            <div className="songs-item-right mobile-hiden">
+                                                                <span className="songs-item-right-tym heart wrap_heart" onClick={heart_click(item['id'])}>
+                                                                    {
+                                                                        item['check_heart'] ?
+                                                                            <i className="fas fa-heart"></i> :
+                                                                            <i className="far fa-heart"></i>
+                                                                    }
                                                                 </span>
-                                                                <span className="songs-item-right-more js__main-color"><i className="fas fa-ellipsis-h"></i></span>
+
+                                                                <span className="songs-item-right-more wrap_playlist js__main-color" onClick={addPlaylist(item['id'])}>
+                                                                    {
+                                                                        item['check_playlist'] ?
+                                                                            <i className="fas fa-bookmark"></i> :
+                                                                            <i className="far fa-bookmark"></i>
+                                                                    }
+                                                                </span>
                                                             </div>
                                                         </li>
                                                     )

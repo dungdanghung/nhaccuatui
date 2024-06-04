@@ -15,23 +15,23 @@ export default function Sidebar({ type_sidebar = "main" }) {
                                         <i className={["far", "fa-play-circle", style["sidebar__item_icon"]].join(' ')}></i>
                                         Cá Nhân
                                     </Link>
-                                    <Link to={'/explore'} className={[style["sidebar__item"], style["js__sidebar-tabs"], style[" js__main-color"]].join(' ')}>
-                                        <i className={["fas", "fa-compact-disc", style["sidebar__item_icon"]].join(' ')}></i>
-                                        Khám Phá
+                                    <Link to={'/library'} className={[style["sidebar__item"], style["js__sidebar-tabs"], style[" js__main-color"]].join(' ')}>
+                                        <i className={["far", "fa-file-audio", style["sidebar__item_icon"]].join(' ')}></i>
+                                        Thư viện
                                     </Link>
-                                    <li className={[style["sidebar__item"], style["js__sidebar-tabs"], style["js__main-color"]].join(' ')}>
+                                    <Link to={'/zingchart'} className={[style["sidebar__item"], style["js__sidebar-tabs"], style["js__main-color"]].join(' ')}>
                                         <i className={["fas", "fa-chart-line", style["sidebar__item_icon"]].join(' ')}></i>
                                         #zingchart
-                                    </li>
-                                    <li className={[style["sidebar__item"], style["js__main-color sidebar__item-radio"], style["js__toast"]].join(' ')}>
+                                    </Link>
+                                    <Link to={'/radio'} className={[style["sidebar__item"], style["js__main-color sidebar__item-radio"], style["js__toast"]].join(' ')}>
                                         <i className={["fas", "fa-broadcast-tower", style["sidebar__item_icon"]].join(' ')}></i>
                                         Radio
                                         <span className={style['sidebar__item-radio-text']}>Live</span>
-                                    </li>
-                                    <li className={[style["sidebar__item"], style["js__main-color"], style["js__toast"]].join(' ')}>
+                                    </Link>
+                                    <Link to={'/follow'} className={[style["sidebar__item"], style["js__main-color"], style["js__toast"]].join(' ')}>
                                         <i className={["far", "far", "fa-list-alt", style["sidebar__item_icon"]].join(' ')}></i>
                                         Theo Dõi
-                                    </li>
+                                    </Link>
                                 </ul>
                             </div>
                             <div className={style["sidebar__line"]}></div>

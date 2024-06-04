@@ -1,18 +1,11 @@
 import "./profile.css"
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useRef } from "react"
 import { baseIMG } from "../../config/api"
-// import { uploadsong } from "../../fetch/song"
 import { useAppContext } from "../../context"
+import { create } from "../../api/post"
 
 function Form_uploadsong({ closepopup }: any) {
-    const { user } = useAppContext()
-    const [backgrounduploadtype, setbackgrounduploadtype] = useState("normal")
-    const [text, settext] = useState('')
-    const [statusoffileinput, setstatusoffileinput] = useState("off")
-    const [songname, setsongname] = useState("")
-    const [authername, setauthername] = useState("")
-    const [imagesong, setimagesong] = useState("")
-    const [thumbnailsong, setthumbnailsong] = useState("")
+    const { user, song_create } = useAppContext()
     const heightofinputcomment = useRef<HTMLTextAreaElement>(null)
 
 
@@ -22,100 +15,63 @@ function Form_uploadsong({ closepopup }: any) {
         }
     }
     function uploadfile() {
-        const file = document.querySelector("#filesong") as HTMLInputElement
-        const image = document.querySelector("#imagesong") as HTMLInputElement
-        const thumbnail = document.querySelector("#thumbnailsong") as HTMLInputElement
-        const file_data = file.files as any
-        const image_data = image.files as any
-        const thumbnail_data = thumbnail.files as any
+        const test_content = document.querySelector('#text_area') as HTMLTextAreaElement
+        const file_song = document.querySelector('.file_song') as HTMLInputElement
+        const file_image = document.querySelector('.file_artwork') as HTMLInputElement
         const data = {
-            filesong: file_data[0],
-            fileimage: image_data[0],
-            filethumbnail: thumbnail_data[0],
-            songname: songname,
-            imagename: imagesong,
-            thumbnailname: thumbnailsong,
-            singer: authername
+            "text_content": test_content.value,
+            "file_song": file_song.files as FileList,
+            "file_image": file_image.files as FileList
         }
-        const checkitem = Array.from(data as any).every((item) => {
-            if (!item) return false
-            else return true
-        })
-        if (!checkitem) {
-            console.log("dien day du thong tin")
-            return
-        } else {
-            // let token = window.localStorage.getItem("token")
-            // token = JSON.parse(token)
-            // uploadsong(data, token.accessToken)
-        }
+        const formdata = new FormData
+        formdata.append('text_content', data.text_content)
+        formdata.append('file_song', data.file_song[0])
+        formdata.append('file_image', data.file_image[0])
+
+        create(formdata)
+            .then((rs) => {
+                if (rs) window.location.reload()
+            })
     }
-    function changetypeupload(e: any) {
-        if (e.target.className === "normalsong") setbackgrounduploadtype("normal")
-        if (e.target.className === "specialsong") setbackgrounduploadtype("special")
-    }
+
     useEffect(() => {
-        if (text !== "") {
-            const element = heightofinputcomment.current as HTMLTextAreaElement
-            if (element) {
-                element.style.height = "auto"
-                element.style.height = element.scrollHeight + "px"
-            }
+        const element = heightofinputcomment.current as HTMLTextAreaElement
+        if (element) {
+            element.style.height = "auto"
+            element.style.height = element.scrollHeight + "px"
         }
-    }, [text])
-    useEffect(() => {
-        const a = document.querySelector(".wrapdisk") as HTMLDivElement
-        const b = document.querySelector(".disk") as HTMLDivElement
-        if (a && b) {
-            if (statusoffileinput === "off") {
-                a.style.left = "0%"
-                b.style.left = "0%"
-            } else {
-                a.style.left = "-30%"
-                b.style.left = "25%"
-            }
-        }
-    }, [statusoffileinput])
-    function clickchosefile(e: any) {
-        e.target.children[0]?.click()
-        setstatusoffileinput("off")
+    }, [])
+
+
+    function textContentInput(e: React.ChangeEvent<HTMLTextAreaElement>) {
+        e.target.style.height = 'auto';
+        e.target.style.height = e.target.scrollHeight + 'px';
     }
-    function handlefileinput(type: string) {
-        return (e: any) => {
-            if (type === "imagesong") {
-                setimagesong(e.target.files[0].name)
-                const a = document.querySelector("#wrapdiskuploadthumbnail") as any
-                const b = document.querySelector("#diskuploadthumbnail") as any
-                var fr = new FileReader();
-                fr.onload = function () {
-                    a.src = fr.result;
-                    b.src = fr.result;
-                }
-                fr.onloadend = () => {
-                    setstatusoffileinput("on")
-                    b.style.display = "block"
-                }
-                if (e.target.files.length !== 0) {
-                    fr.readAsDataURL(e.target.files[0]);
-                }
-            } else if (type === "namesong") {
-                setsongname(e.target.files[0].name)
-                setstatusoffileinput("on")
-            } else if (type === "thumbnailsong") {
-                setthumbnailsong(e.target.files[0].name)
-                const a = document.querySelector(".thumbnailsong") as any
-                var fr = new FileReader();
-                fr.onload = function () {
-                    a.src = fr.result;
-                }
-                fr.onloadend = () => {
-                    a.style.display = "block"
-                    setstatusoffileinput("on")
-                }
-                if (e.target.files.length !== 0) {
-                    fr.readAsDataURL(e.target.files[0]);
-                }
+
+    function song_input() {
+        const element = document.querySelector('.file_song') as HTMLInputElement
+        element.click()
+    }
+    function image_input() {
+        const element = document.querySelector('.file_artwork') as HTMLInputElement
+        element.click()
+    }
+
+    function handle_image_create_input() {
+        const input = document.querySelector('.file_artwork') as HTMLInputElement
+        const image_background = document.getElementById('wrapdiskuploadthumbnail') as HTMLImageElement
+        const wrap_disk = document.querySelector('.wrapdisk') as HTMLDivElement
+        const disk = document.querySelector('.disk') as HTMLDivElement
+        if (input) {
+            const files = input.files as FileList
+            if (files[0]) {
+                image_background.src = URL.createObjectURL(files[0])
             }
+            image_background.style.objectFit = "contain"
+            wrap_disk.style.left = '50%'
+            disk.style.left = '50%'
+            wrap_disk.style.left = '41%'
+            disk.style.left = '67%'
         }
     }
 
@@ -126,31 +82,35 @@ function Form_uploadsong({ closepopup }: any) {
                     <div className="headeritemcontent">
                         <div className="wrapavatar_nameandtime">
                             <div className="avatar">
-                                <img src={`${baseIMG}/avatar/${user.user?.avatar}`} />
+                                <img src={`${baseIMG}img/avatar/${user.user?.avatar}`} />
                             </div>
                             <div className="nameandtime">
                                 <div className="name">{user.user?.user_name}</div>
                             </div>
                         </div>
                         <button type="reset" className="more" id="closepopupuploadfile">
-                            {/* <FontAwesomeIcon icon={faXmark} /> */}
+                            <i className="fas fa-times"></i>
                         </button>
                     </div>
-                    <div className="optionupload">
-                        <div onClick={changetypeupload} className="normalsong" style={{ backgroundColor: backgrounduploadtype === "normal" ? "#afafaf63" : "transparent" }}>
-                            Quyền người dùng
-                        </div>
-                        <div onClick={changetypeupload} className="specialsong" style={{ backgroundColor: backgrounduploadtype === "special" ? "#afafaf63" : "transparent" }}>
-                            Quyền tác giả
+
+                    <div className="detailinfor">
+                        <div className="wrapinfor">
+                            <textarea
+                                onInput={textContentInput}
+                                placeholder="text content"
+                                name="textcontent"
+                                id="text_area"
+                            />
                         </div>
                     </div>
+
                     <div className="maincontent">
                         <div className="content">
-                            <div className="wrapdisk">
-                                <img id="wrapdiskuploadthumbnail" className={""} src="http://localhost:4000/orther/music_128x128.png" />
+                            <div className="wrapdisk" >
+                                <img id="wrapdiskuploadthumbnail" className={""} src={`${baseIMG}img/orther/music_128x128.png`} />
                             </div>
-                            <div className="disk" style={{ left: "0%", animationPlayState: 'paused' }}>
-                                <img id="diskuploadthumbnail" className={""} src="" style={{ display: "none" }} />
+                            <div className="disk" style={{ animationPlayState: 'paused' }}>
+                                <img id="diskuploadthumbnail" className={""} src={`${baseIMG}img/orther/disk.png`} />
                             </div>
                         </div>
                         <img className="thumbnailsong" src="" style={{ display: "none" }} />
@@ -158,72 +118,38 @@ function Form_uploadsong({ closepopup }: any) {
 
                     <div className="detailinfor">
                         <div className="wrapinfor">
-                            <textarea
-                                name="inputnamesong"
-                                ref={heightofinputcomment}
-                                onInput={(e) => {
-                                    const element = e.target as HTMLTextAreaElement
-                                    setsongname(element.value)
-                                }}
-                                placeholder="name song"
-                                value={songname}
-                            />
-                            <div className="btnsetfile" onClick={clickchosefile}>
-                                chose file
-                                <input id="filesong" type="file" onInput={handlefileinput("namesong")} />
+                            <div className='release-detail-option-item'>
+                                <div className='option' onClick={song_input}>
+                                    Add Song
+                                    {
+                                        song_create.formData?.get('media') ?
+                                            <div className='check'>
+                                                <img src='/src/assets/img/svg/check.svg'></img>
+                                            </div> : <></>
+                                    }
+                                </div>
+                                <input type="file" className="file_song" name="file_song" hidden />
                             </div>
                         </div>
                     </div>
                     <div className="detailinfor">
                         <div className="wrapinfor">
-                            <textarea
-                                name="inputimagesong"
-                                ref={heightofinputcomment}
-                                onInput={(e) => {
-                                    const element = e.target as HTMLTextAreaElement
-                                    setimagesong(element.value)
-                                }}
-                                placeholder="image song"
-                                value={imagesong}
-                            />
-                            <div className="btnsetfile" onClick={clickchosefile}>
-                                chose file
-                                <input id="imagesong" type="file" onInput={handlefileinput("imagesong")} />
+                            <div className='release-detail-option-item'>
+                                <div className='option' onClick={image_input}>
+                                    Add Artwork
+                                    {
+                                        song_create.formData?.get('image') ?
+                                            <div className='check'>
+                                                <img src='/src/assets/img/svg/check.svg'></img>
+                                            </div> : <></>
+                                    }
+                                </div>
+                                <input type="file" className="file_artwork" name="file_artwork" hidden onChange={handle_image_create_input} />
                             </div>
                         </div>
                     </div>
-                    <div className="detailinfor">
-                        <div className="wrapinfor">
-                            <textarea
-                                name="inputthumbnailsong"
-                                ref={heightofinputcomment}
-                                onInput={(e) => {
-                                    const element = e.target as HTMLTextAreaElement
-                                    setthumbnailsong(element.value)
-                                }}
-                                placeholder="thumbnail song"
-                                value={thumbnailsong}
-                            />
-                            <div className="btnsetfile" onClick={clickchosefile}>
-                                chose file
-                                <input id="thumbnailsong" type="file" onInput={handlefileinput("thumbnailsong")} />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="detailinfor">
-                        <div className="wrapinfor">
-                            <textarea
-                                name="inputauther"
-                                ref={heightofinputcomment}
-                                onInput={(e) => {
-                                    const element = e.target as HTMLTextAreaElement
-                                    setauthername(element.value)
-                                }}
-                                placeholder="tac gia"
-                                value={authername}
-                            />
-                        </div>
-                    </div>
+
+
                     <div className="btmpuload">
                         <span onClick={uploadfile}> Thêm mới </span>
                     </div>

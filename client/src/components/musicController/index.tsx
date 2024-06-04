@@ -2,13 +2,15 @@ import "./musicController.css"
 import { useAppContext } from "../../context"
 import { useEffect, useState, useRef } from "react"
 import { baseIMG, baseURL } from "../../config/api"
+import { GetLyric } from "../../api/music"
+import { Link } from "react-router-dom"
 
 export default function MusicController() {
     const audio = useRef<HTMLAudioElement>(null);
     const video = useRef<HTMLVideoElement>(null);
     const void_input = useRef<HTMLInputElement>(null);
     const tracktime = useRef<HTMLInputElement>(null);
-    const { media } = useAppContext()
+    const { media, lyric_active } = useAppContext()
     const [Media, set_media] = useState<any>([]);
     const [play, setplay] = useState<boolean>(false)
     const [time, setTime] = useState('00:00')
@@ -16,6 +18,8 @@ export default function MusicController() {
     const [allowHandleTracktime, setallowHandleTracktime] = useState(false);
     const [able_action, set_able_action] = useState(false);
     const [show_video, set_show_video] = useState(false)
+    const [lyric, setLyric] = useState([]);
+    const [lyric_start, setLyricStart] = useState<string | null>('');
 
 
     function btnPlayClick(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
@@ -34,6 +38,19 @@ export default function MusicController() {
             media = audio.current as HTMLAudioElement;
         } else {
             media = video.current as HTMLVideoElement;
+        }
+        if (lyric.length != 0) {
+            let alow_lyric = lyric_start as string | null;
+            if (alow_lyric && media.currentTime >= parseFloat(alow_lyric)) {
+                lyric.every((item, index) => {
+                    if (media.currentTime >= item['value']) {
+                        lyric_active.set(item['value'])
+                        if (index != 0) setLyricStart(lyric[index - 1]['value'])
+                        else setLyricStart(null)
+                        return false
+                    } else return true
+                })
+            }
         }
         let a = Math.floor(media.currentTime / 60) as any
         let b = Math.floor(media.currentTime - a * 60) as any
@@ -66,6 +83,9 @@ export default function MusicController() {
         const c = b.duration;
         const d = a.value
         const value = (parseInt(d) / 100 * c).toFixed()
+        if (Media?.audio) {
+            setLyricStart(value)
+        }
         b.currentTime = parseInt(value)
         setallowHandleTracktime(true)
     }
@@ -104,6 +124,34 @@ export default function MusicController() {
 
     useEffect(() => {
         set_media(media.get)
+        lyric_active.set(null)
+        if (media.get?.lyric_file) {
+            GetLyric(media.get.lyric_file)
+                .then((rs: string) => {
+                    return rs.trim().split("\n")
+                })
+                .then((rs) => {
+                    const formatData = [] as any
+                    rs.forEach((item, index) => {
+                        let value = "";
+                        let line = item.trim();
+                        let minute = parseInt(line.substr(1, 2));
+                        let second = parseInt(line.substr(4, 5));
+                        let milisecond = line.substr(6, 3);
+                        if (minute != 0) value = minute * 60 + second + milisecond
+                        else value = minute + second + milisecond
+                        let text = line.substr(line.indexOf(']') + 1, line.length).trim();
+                        formatData.unshift({
+                            'value': value,
+                            'text': text
+                        })
+                        if (index == 0) {
+                            setLyricStart(value)
+                        }
+                    })
+                    setLyric(formatData)
+                })
+        }
     }, [media.get])
 
     useEffect(() => {
@@ -111,23 +159,49 @@ export default function MusicController() {
             if (media.play) {
                 if (Media?.audio) {
                     audio.current?.play();
-                } else {
+                } else if (Media?.video) {
                     set_show_video(true)
                     video.current?.play()
                 }
                 setallowHandleTracktime(true)
                 setplay(true)
+                const wrap_disk = document.querySelector('.maincontent .active') as HTMLDivElement
+                if (wrap_disk) {
+                    const background_disk = wrap_disk.children[0] as HTMLDivElement
+                    const disk = wrap_disk.children[1] as HTMLDivElement
+                    background_disk.style.left = '41%'
+                    disk.style.left = '50%'
+                    wrap_disk.classList.remove('pause')
+                    wrap_disk.classList.add('play')
+                }
             } else {
                 if (Media?.audio) {
                     audio.current?.pause()
-                } else {
+                } else if (Media?.video) {
                     video.current?.pause()
                 }
                 setallowHandleTracktime(false)
                 setplay(false)
+                const wrap_disk = document.querySelector('.maincontent .active') as HTMLDivElement
+                if (wrap_disk) {
+                    const background_disk = wrap_disk.children[0] as HTMLDivElement
+                    const disk = wrap_disk.children[1] as HTMLDivElement
+                    background_disk.style.left = '50%'
+                    disk.style.left = '25%'
+                    wrap_disk.classList.remove('play')
+                    wrap_disk.classList.add('pause')
+                }
             }
         } else {
             set_able_action(true);
+        }
+    }, [play])
+
+    useEffect(() => {
+        if (media.play) {
+            setplay(true)
+        } else {
+            setplay(false)
         }
     }, [media.play])
 
@@ -139,7 +213,11 @@ export default function MusicController() {
                     <div className="music-control__left">
                         <div className="music-control__left-img-box">
                             <div className="music-control__left-img">
-                                <img className="music-controler-img" src={`${baseIMG}uploads/image/168x94/${Media?.image}`}></img>
+                                {
+                                    Media?.image ?
+                                        <img className="music-controler-img" src={`${baseIMG}uploads/image/168x94/${Media?.image}`}></img> :
+                                        <img className="music-controler-img" src={`src/assets/orther/song.jpg`}></img>
+                                }
                             </div>
                         </div>
                         <div className="music-control__left-content">
@@ -189,7 +267,9 @@ export default function MusicController() {
                 </div>
                 <div className="col l-3 m-2 s-0" style={{ zIndex: 5 }}>
                     <div className="music-control__right">
-                        <i className="music-control__right-icon1 ipad-air-hiden js__main-color js__toast fas fa-photo-video"></i>
+                        <Link to={'/song-detail?value=' + Media?.id}>
+                            <i className="music-control__right-icon1 ipad-air-hiden js__main-color js__toast fas fa-photo-video"></i>
+                        </Link>
                         <i className="music-control__right-icon2 ipad-air-hiden js__main-color js__toast fas fa-microphone"></i>
                         <i className="music-control__right-icon3 ipad-air-hiden js__main-color js__toast far fa-square"></i>
                         <div className="music-control__right-volume-icon">

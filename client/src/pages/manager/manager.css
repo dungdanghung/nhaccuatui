@@ -145,6 +145,8 @@ main.zm-section>.container {
 }
 
 .zm-nav-buttons .item {
+    cursor: pointer;
+    color: #fff;
     font-weight: 400;
     font-size: 12px;
     padding: 4px 10px;

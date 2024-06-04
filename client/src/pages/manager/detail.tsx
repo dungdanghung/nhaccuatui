@@ -13,7 +13,7 @@ export default function Detail() {
     const [title, settitle] = useState("");
     const [artists, setartists] = useState([]);
     const [show_image, set_show_image] = useState(false)
-    const { music } = useAppContext()
+    const { media } = useAppContext()
 
     let { id } = useParams();
     useEffect(() => {
@@ -21,7 +21,7 @@ export default function Detail() {
             .then((rs) => {
                 if (rs) {
                     setsong(rs);
-                    music.set(rs);
+                    media.set(rs);
                 }
             })
     }, [])
@@ -29,12 +29,12 @@ export default function Detail() {
     function play_of_pause(e: React.MouseEvent<HTMLDivElement>) {
         const element = e.target as HTMLImageElement
         if (element.className.includes('playmusic')) {
-            music.setplay(false)
-            music.setplay(false)
+            media.setplay(false)
+            media.setplay(false)
         } else {
-            music.setplay(true)
-            music.set(song)
-            music.setplay(true)
+            media.setplay(true)
+            media.set(song)
+            media.setplay(true)
         }
     }
 
@@ -126,7 +126,7 @@ export default function Detail() {
                 <div className="contain_1_play">
                     <div className="wrap_img" onClick={play_of_pause}>
                         {
-                            music.play ?
+                            media.play ?
                                 <i className="fas fa-pause playmusic"></i> :
                                 <i className="fas fa-play pausemusic"></i>
                         }

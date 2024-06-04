@@ -6,14 +6,13 @@ import Header from "../../components/header"
 import "./only_header.css"
 
 export default function LayoutOnlyHearder() {
-    const { user, permissions } = useAppContext()
+    const { user } = useAppContext()
     const [checking, setChecking] = useState(true)
     const navigate = useNavigate()
     useEffect(() => {
         GetUser()
             .then(rs => {
                 user.setUser(rs.user)
-                permissions.setItems(rs.permissions)
                 setChecking(false)
                 document.querySelector('.pre-load-container')?.classList.add('hide')
             })

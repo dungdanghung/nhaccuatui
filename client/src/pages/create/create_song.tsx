@@ -63,7 +63,7 @@ export default function CreateSong() {
                         </div>
                         <div className='release-detail-option'>
                             <div className='release-detail-option-item'>
-                                <Link to={"./album_detail"} className='option'>
+                                <Link to={"/create/album_detail"} className='option'>
                                     Album Details
                                     {
                                         song_create.formData ?
@@ -74,7 +74,7 @@ export default function CreateSong() {
                                 </Link>
                             </div>
                             <div className='release-detail-option-item'>
-                                <Link to={"./add_audio"} className='option'>
+                                <Link to={"/create/add_audio"} className='option'>
                                     Add Audio
                                     {
                                         song_create.formData?.get('audio') ?
@@ -85,7 +85,7 @@ export default function CreateSong() {
                                 </Link>
                             </div>
                             <div className='release-detail-option-item'>
-                                <Link to={"./add_artwork"} className='option'>
+                                <Link to={"/create/add_artwork"} className='option'>
                                     Add Artwork
                                     {
                                         song_create.formData?.get('image') ?
@@ -96,7 +96,7 @@ export default function CreateSong() {
                                 </Link>
                             </div>
                             <div className='release-detail-option-item'>
-                                <Link to={"./add_lyric"} className='option'>
+                                <Link to={"/create/add_lyric"} className='option'>
                                     Add Lyric
                                     {
                                         song_create.formData?.get('lyric') ?

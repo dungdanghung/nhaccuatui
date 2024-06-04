@@ -112,7 +112,7 @@ export default function Manager_music() {
                                 <div style={{ position: "relative" }}>
                                     <div className="header">
                                         <div className="text">
-                                            Thư viện</div><button className="zm-btn button">
+                                            Quản lý bài hát</div><button className="zm-btn button">
                                             <i className="icon">
                                                 <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
                                                     <g filter="url(#filter0_d_3141_46346)">
@@ -195,7 +195,7 @@ export default function Manager_music() {
                                                         {
                                                             songs.map(($item) => {
                                                                 return (
-                                                                    <div key={$item['id']} className="select-item">
+                                                                    <div key={$item['id']} className="select-item" style={{ marginBottom: '13px' }}>
                                                                         <div className="list-item bor-b-1 media-item hide-right active">
                                                                             <div className="media" style={{ backgroundColor: "transparent" }}>
                                                                                 <div className="media-left">

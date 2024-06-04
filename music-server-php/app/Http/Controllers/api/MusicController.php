@@ -4,16 +4,18 @@ namespace App\Http\Controllers\api;
 // pbzh gdfo xfqk jgta
 use getID3;
 use Carbon\Carbon;
+use App\Mail\MyMail;
 use App\Models\Song;
 use App\Helper\Reply;
+use App\Models\HotSong;
+use App\Models\InteractSong;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use Intervention\Image\Facades\Image;
-use App\Mail\MyMail;
-use App\Models\HotSong;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -49,8 +51,9 @@ class MusicController extends Controller
 
             $Width = 1280;
             $Height = 720;
+            $min = 600;
 
-            if ($dimensions[0] != $Width || $dimensions[1] != $Height) {
+            if ($dimensions[0] > $Width || $dimensions[1] > $Height || $dimensions[0] < $min || $dimensions[1] < $min) {
                 $validator->errors()->add('image', 'The image dimensions must not exceed 3000x3000 pixels.');
             }
         });
@@ -92,13 +95,12 @@ class MusicController extends Controller
             'primary_genre' => 'required',
             'secondary_genre' => 'required',
             'composition_copyright' => 'required',
-            'record_laber_name' => 'required',
+            // 'record_laber_name' => 'required',
             'originaly_released' => 'required|date_format:Y-m-d',
             'audio' => 'required|file|mimes:mp3|max:51200',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:4048',
             'lyric' => 'max:50000',
         ];
-
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
             return Reply::error(__('messages.something_went_wrong'));
@@ -108,7 +110,6 @@ class MusicController extends Controller
         try {
             $input = $request->only(['language', 'title', 'primary_genre', 'secondary_genre', 'composition_copyright', 'record_laber_name']);
             $input['artists'] = json_encode($request->artists);
-
             $nameAudio = auth()->user()->username . time() . '.' . $request->file('audio')->getClientOriginalExtension();
             Storage::disk('local')->putFileAs('uploads/song', $request->file('audio'), $nameAudio);
             Storage::disk('public')->putFileAs('uploads/song', $request->file('audio'), $nameAudio);
@@ -134,6 +135,7 @@ class MusicController extends Controller
                 $nameLyric = auth()->user()->username . time() . '.' . $request->file('lyric')->getClientOriginalExtension();
                 Storage::disk('local')->putFileAs('uploads/lyric', $request->file('lyric'), $nameLyric);
                 Storage::disk('public')->putFileAs('uploads/lyric', $request->file('lyric'), $nameLyric);
+                $input['lyric_file'] = $nameLyric;
             }
 
             $input['originaly_released'] = Carbon::parse($request->originaly_released);
@@ -242,6 +244,11 @@ class MusicController extends Controller
         return response()->file(public_path("uploads/song/" . $request->name_audio));
     }
 
+    public function getLyric(Request $request)
+    {
+        return response()->file(public_path("uploads/lyric/" . $request->name_lyric));
+    }
+
     public function statusChange(Request $request)
     {
         $is_admin = auth()->user()->hasRole('Admin');
@@ -287,9 +294,10 @@ class MusicController extends Controller
 
     public function getHotSong(Request $request)
     {
+        $user = auth()->user();
         $songs = HotSong::orderBy('value', 'desc')->limit(20)->get();
         if (count($songs) == 0) {
-            $songs = Song::where('status', 'accept')->orderBy('created_at', 'desc')->limit(20)->get();
+            $songs = Song::where('status', 'accept')->orderBy('heart', 'desc')->limit(20)->get();
         } else {
             $filter_songs = [];
             foreach ($songs as $song) {
@@ -301,14 +309,18 @@ class MusicController extends Controller
         }
         $format_songs = [];
         foreach ($songs as $song) {
+            $interact = $song->interact_heart->where('song_id', $song->id)->where('user_id', $user->id)->where('type', 'add_heart_song')->first();
+            $checkPlaylist = $song->playlist->where('song_id', $song->id)->where('user_id', $user->id)->first();
             array_push($format_songs, [
                 'id' => $song->id,
                 'title' => $song->title,
-                // 'artists' => implode(' ', json_decode($song->artists)),
                 'artists' => $song->artists,
                 'audio' => $song->audio,
                 'image' => $song->image,
                 'heart' => $song->heart,
+                'check_heart' => $interact ? true : false,
+                'check_playlist' => $checkPlaylist ? true : false,
+                'lyric_file' => $song->lyric_file
             ]);
         }
         return response()->json($format_songs);
@@ -332,6 +344,7 @@ class MusicController extends Controller
                 'audio' => $song->audio,
                 'image' => $song->image,
                 'heart' => $song->heart,
+                'lyric_file' => $song->lyric_file
             ]);
             if (count($format_songs_item) >= 3) {
                 array_push($format_songs, $format_songs_item);
@@ -339,5 +352,101 @@ class MusicController extends Controller
             }
         }
         return response()->json($format_songs);
+    }
+
+    public function zingChart()
+    {
+        $user = auth()->user();
+        $songs = HotSong::orderBy('value', 'desc')->limit(100)->get();
+        if (count($songs) == 0) {
+            $songs = Song::where('status', 'accept')->orderBy('heart', 'desc')->limit(20)->get();
+        } else {
+            $filter_songs = [];
+            foreach ($songs as $song) {
+                if ($song->song->status == "accept") {
+                    array_push($filter_songs, $song);
+                }
+            }
+            $songs = $filter_songs;
+        }
+        $format_songs = [];
+        foreach ($songs as $song) {
+            $interact = $song->interact_heart->where('song_id', $song->id)->where('user_id', $user->id)->where('type', 'add_heart_song')->first();
+            $checkPlaylist = $song->playlist->where('song_id', $song->id)->where('user_id', $user->id)->first();
+            array_push($format_songs, [
+                'id' => $song->id,
+                'title' => $song->title,
+                'artists' => $song->artists,
+                'audio' => $song->audio,
+                'image' => $song->image,
+                'heart' => $song->heart,
+                'check_heart' => $interact ? true : false,
+                'check_playlist' => $checkPlaylist ? true : false,
+                'lyric_file' => $song->lyric_file
+            ]);
+        }
+        return response()->json($format_songs);
+    }
+
+    public function addHeart(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user->hasPermissionTo('view_song') || $user->status == "disable") {
+            return Reply::error(__('messages.you_do_not_have_the_right_to_use_this_feature'));
+        }
+
+        DB::beginTransaction();
+        try {
+            $song = Song::where('id', $request->song_id)->first();
+            if (!empty($song)) {
+                $interact = $song->interact_heart->where('song_id', $song->id)->where('user_id', $user->id)->where('type', 'add_heart_song')->first();
+                $song->update([
+                    'heart' => $interact ? $song->heart - 1 : $song->heart + 1
+                ]);
+                if ($interact) {
+                    $interact->delete();
+                } else {
+                    InteractSong::create([
+                        'user_id' => $user->id,
+                        'song_id' => $song->id,
+                        'type' => 'add_heart_song'
+                    ]);
+                }
+            }
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return Reply::error(__('messages.something_went_wrong'));
+        }
+    }
+
+    public function getMySongUpload()
+    {
+        $user = auth()->user();
+        if (!$user->hasPermissionTo('view_song') || $user->status == "disable") {
+            return Reply::error(__('messages.you_do_not_have_the_right_to_use_this_feature'));
+        }
+
+        $songs = Song::where('user_id', $user->id)->where('status', 'accept')->get();
+        return response()->json($songs);
+    }
+
+    public function search($value)
+    {
+        if ($value != '') {
+            $song = Song::where('title', 'like', '%' . $value . '%')->orderBy('heart', 'desc')->limit(5)->get(['title']);
+            return response()->json($song);
+        }
+    }
+
+    public function searchSong($value)
+    {
+        if ($value != '') {
+            $song = Song::where('title', 'like', '%' . $value . '%')->orderBy('heart', 'desc')->limit(5)->get();
+
+
+
+            return response()->json($song);
+        }
     }
 }

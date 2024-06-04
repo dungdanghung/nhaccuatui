@@ -4,12 +4,16 @@ import { useAppContext } from "../../context";
 import tippy from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/themes/light.css';
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom"
+import { Search } from "../../api/music";
 
+let timeout: any
 export default function Header({ type_header = "full" }) {
     const { user, release_title } = useAppContext();
     const navigator = useNavigate();
+    const [dataSearch, setDataSearch] = useState([])
+    const [showSearchtable, setshowSearchtable] = useState(false)
     useEffect(() => {
         tippy('.header__upload', {
             content: 'Phát hành bài hát',
@@ -28,11 +32,51 @@ export default function Header({ type_header = "full" }) {
     }
 
     function uploadConfirm() {
-        const title = document.querySelector('.title-song') as HTMLInputElement
-        release_title.set(title.value);
+        // const title = document.querySelector('.title-song') as HTMLInputElement
+        // release_title.set(title.value);
         navigator('/create')
     }
 
+    function searchinput(e: React.ChangeEvent<HTMLInputElement>) {
+        clearTimeout(timeout)
+        timeout = setTimeout(() => {
+            if (e.target.value != '') {
+                Search(e.target.value)
+                    .then((rs) => {
+                        setDataSearch(rs)
+                    })
+            } else {
+                setDataSearch([])
+            }
+        }, 500)
+    }
+
+    function closeSearchTable(e: any) {
+        const element = e.target as HTMLElement
+        if (!['header__width-search-sub-item-link', 'header__width-search-input'].includes(element.className)) {
+            console.log(element.className)
+            setshowSearchtable(false)
+        } else if (element.className == "header__width-search-sub-item-link") {
+            window.removeEventListener('click', closeSearchTable)
+            setshowSearchtable(false)
+            setDataSearch([])
+        }
+    }
+    function handleKeyDown(e: any) {
+        if (e.keyCode == 13) {
+            const value = document.querySelector('.header__width-search-input') as HTMLInputElement
+            window.removeEventListener('click', closeSearchTable)
+            window.removeEventListener('keydown', handleKeyDown)
+            setshowSearchtable(false)
+            setDataSearch([])
+            navigator('/search?value=' + value.value)
+        }
+    }
+    function showSearch() {
+        setshowSearchtable(true)
+        window.addEventListener('click', closeSearchTable)
+        window.addEventListener('keydown', handleKeyDown)
+    }
 
     return (
         <div className="header-wrapper">
@@ -47,46 +91,36 @@ export default function Header({ type_header = "full" }) {
                                 <i className="fas fa-arrow-left hover js__toast"></i>
                                 <i className="fas fa-arrow-right hover js__toast header__undo--disble"></i>
                             </div>
-                            <div className="header__width-search js__backgroundColor">
+                            <div className="header__width-search js__backgroundColor" style={{ zIndex: '6' }}>
                                 <i className="fas fa-search header__width-search-icon js__sub-color"></i>
 
-                                <input placeholder="Nhập tên bài hát, nghệ sĩ hoặc MV . . ." type="text" className="header__width-search-input" />
+                                <input onFocus={showSearch} placeholder="Nhập tên bài hát, nghệ sĩ hoặc MV . . ." type="text" className="header__width-search-input" onChange={searchinput} />
+                                {
+                                    showSearchtable ?
+                                        <div className="header__width-search-sub" >
+                                            <span className="header__width-search-sub-header js__main-color">Đề xuất cho bạn</span>
+                                            <ul className="header__width-search-sub-list ">
+                                                {
+                                                    dataSearch.map((item, index) => {
+                                                        return (
+                                                            <div key={index}>
+                                                                <li className="header__width-search-sub-item">
+                                                                    <div className="header__width-search-sub-item-link" onClick={() => {
+                                                                        navigator('/search?value=' + item['title'])
+                                                                    }}>
+                                                                        <i className="fas fa-arrows-alt-h js__sub-color"></i>
+                                                                        <span className="js__sub-color">{item['title']}</span>
+                                                                    </div>
+                                                                </li>
+                                                            </div>
+                                                        )
+                                                    })
+                                                }
 
-                                <div className="header__width-search-sub">
-                                    <span className="header__width-search-sub-header js__main-color">Đề xuất cho bạn</span>
-                                    <ul className="header__width-search-sub-list ">
-                                        <li className="header__width-search-sub-item">
-                                            <a href="#" className="header__width-search-sub-item-link">
-                                                <i className="fas fa-arrows-alt-h js__sub-color"></i>
-                                                <span className="js__sub-color">là ai</span>
-                                            </a>
-                                        </li>
-                                        <li className="header__width-search-sub-item">
-                                            <a href="#" className="header__width-search-sub-item-link">
-                                                <i className="fas fa-arrows-alt-h js__sub-color"></i>
-                                                <span className="js__sub-color">adele</span>
-                                            </a>
-                                        </li>
-                                        <li className="header__width-search-sub-item">
-                                            <a href="#" className="header__width-search-sub-item-link">
-                                                <i className="fas fa-arrows-alt-h js__sub-color"></i>
-                                                <span className="js__sub-color">chung tình</span>
-                                            </a>
-                                        </li>
-                                        <li className="header__width-search-sub-item">
-                                            <a href="#" className="header__width-search-sub-item-link">
-                                                <i className="fas fa-arrows-alt-h js__sub-color"></i>
-                                                <span className="js__sub-color">zing choice</span>
-                                            </a>
-                                        </li>
-                                        <li className="header__width-search-sub-item">
-                                            <a href="#" className="header__width-search-sub-item-link">
-                                                <i className="fas fa-arrows-alt-h js__sub-color"></i>
-                                                <span className="js__sub-color">#zingchart</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
+                                            </ul>
+                                        </div> :
+                                        <></>
+                                }
 
                             </div>
                         </> : <></>

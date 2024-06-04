@@ -33,4 +33,9 @@ class PlayList extends Model
 		'user_id',
 		'song_id'
 	];
+
+	public function song()
+	{
+		return $this->hasOne(Song::class, 'id', 'song_id');
+	}
 }

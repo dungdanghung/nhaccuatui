@@ -2,25 +2,30 @@ import { useEffect, useState } from "react"
 import "./profile.css"
 import { GetUser } from "../../api/user"
 import { baseIMG } from "../../config/api"
-import Header from "../../components/header"
 import Change_avatar_modal from "./change_avatar_modal"
 import Profile_Item from "./profile_item"
 import Form_uploadsong from "./form_upload"
 import { useAppContext } from "../../context"
 import { useNavigate } from "react-router-dom"
 import Change_background_modal from "./change_background_modal"
+import { GetPosts } from "../../api/post"
+import Show_all_comment from "./show_all_comment"
+import Edit_profile from "./edit_profile"
 
 function Profile() {
 
     const [datacontent, setdatacontent] = useState([])
     const [popupuploadsong, setpopupuploadsong] = useState("off")
+    const [modal_edit_profile, set_modal_edit_profile] = useState("off")
 
-
-    const { user, permissions } = useAppContext()
+    const { user } = useAppContext()
     const navigate = useNavigate()
 
     function popupfileupload() {
         setpopupuploadsong("on")
+    }
+    function modalEditProfile() {
+        set_modal_edit_profile("on")
     }
     function closepopupfileupload() {
         setpopupuploadsong("off")
@@ -84,11 +89,14 @@ function Profile() {
         GetUser()
             .then(rs => {
                 user.setUser(rs.user)
-                permissions.setItems(rs.permissions)
                 document.querySelector('.pre-load-container')?.classList.add('hide')
             })
             .catch(() => {
                 navigate('/auth/login')
+            })
+        GetPosts()
+            .then((rs) => {
+                setdatacontent(rs)
             })
     }, [])
 
@@ -96,7 +104,7 @@ function Profile() {
         return (
             <div className="profilepage">
                 <div className="wrapprofile">
-                    <Header type_header="only_heard" />
+
                     <div className="contentuser">
                         <div className="wrapcontentuser">
                             <div className="backgroundavatar">
@@ -138,7 +146,7 @@ function Profile() {
                                 </div>
                                 <div className="functionofuser">
                                     <div className="wrapbtnfunction">
-                                        <div className="updateinfor">
+                                        <div className="updateinfor" onClick={modalEditProfile}>
                                             <span>Chỉnh Sửa Trang Cá Nhân</span>
                                             <i className="fas fa-pencil-alt"></i>
                                         </div>
@@ -160,8 +168,6 @@ function Profile() {
                                 <Form_uploadsong closepopup={closepopupfileupload} />
                         }
 
-
-
                     </div>
                     <div className="profilecontent">
                         <div className="wrapcontent">
@@ -182,7 +188,13 @@ function Profile() {
                             <div className="containcontent">
                                 {
                                     datacontent.length !== 0 ?
-                                        <div>content</div>
+                                        datacontent.map((item) => {
+                                            return (
+                                                <div key={item['id']}>
+                                                    <Profile_Item data={item} />
+                                                </div>
+                                            )
+                                        })
                                         :
                                         <></>
                                 }
@@ -205,8 +217,20 @@ function Profile() {
                     <Change_background_modal />
                     <input type="file" className="background_file" hidden onChange={background_input} />
                 </div>
-
-
+                <div className="show_all_comment modal" onClick={close_modal}>
+                    <Show_all_comment />
+                </div>
+                {
+                    modal_edit_profile == "off" ? <></> :
+                        <div className="edit_profile_modal" onClick={(e) => {
+                            const a = e.target as HTMLDivElement
+                            if (a.className == "edit_profile_modal") {
+                                set_modal_edit_profile('off')
+                            }
+                        }}>
+                            <Edit_profile />
+                        </div>
+                }
             </div >
         )
     }
