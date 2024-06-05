@@ -177,26 +177,46 @@ class MusicController extends Controller
         $rules = [
             'id' => 'required|integer',
         ];
-
-        $is_admin = auth()->user()->hasRole('Admin');
+        $user = auth()->user();
+        // $is_admin = auth()->user()->hasRole('Admin');
 
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
             return Reply::error(__('messages.something_went_wrong'));
         }
 
-        $song = Song::where('id', $request->id)->first();
+        // $song = Song::where('id', $request->id)->first();
+        // if (empty($song)) {
+        //     return Reply::error(__('messages.something_went_wrong'));
+        // } else {
+        //     if ($song->status != "accept") {
+        //         if (!$is_admin || $song->user_id != auth()->user()->id) {
+        //             return [];
+        //         }
+        //     }
+        // }
+
+        // return response()->json($song);
+        $song = Song::where('id', $request->id)->where('status', 'accept')->first();
         if (empty($song)) {
             return Reply::error(__('messages.something_went_wrong'));
-        } else {
-            if ($song->status != "accept") {
-                if (!$is_admin || $song->user_id != auth()->user()->id) {
-                    return [];
-                }
-            }
         }
 
-        return response()->json($song);
+        $interact = $song->interact_heart->where('song_id', $song->id)->where('user_id', $user->id)->where('type', 'add_heart_song')->first();
+        $checkPlaylist = $song->playlist->where('song_id', $song->id)->where('user_id', $user->id)->first();
+        $format_song =  [
+            'id' => $song->id,
+            'title' => $song->title,
+            'artists' => $song->artists,
+            'audio' => $song->audio,
+            'image' => $song->image,
+            'heart' => $song->heart,
+            'check_heart' => $interact ? true : false,
+            'check_playlist' => $checkPlaylist ? true : false,
+            'lyric_file' => $song->lyric_file
+        ];
+
+        return response()->json($format_song);
     }
 
     public function editSongDetail(Request $request)

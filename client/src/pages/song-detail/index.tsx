@@ -17,14 +17,16 @@ export default function index() {
     function heart_click(id: any) {
         return (e: any) => {
             AddHeart(id)
-            const heart = e.target as HTMLImageElement
-            if (heart.className.includes('fas')) {
-                heart.classList.remove('fas')
-                heart.classList.add('far')
-            } else {
-                heart.classList.remove('far')
-                heart.classList.add('fas')
-            }
+            const heart = document.querySelectorAll('.wrap_heart i') as NodeListOf<HTMLImageElement>
+            heart.forEach((element) => {
+                if (element.className.includes('fas')) {
+                    element.classList.remove('fas')
+                    element.classList.add('far')
+                } else {
+                    element.classList.remove('far')
+                    element.classList.add('fas')
+                }
+            })
         }
     }
     function addPlaylist(id: any) {
@@ -205,7 +207,7 @@ export default function index() {
                                 }
                             </span>
 
-                            <span className="songs-item-right-more wrap_playlist js__main-color">
+                            <span className="songs-item-right-more wrap_playlist js__main-color" onClick={addPlaylist(media.get?.id)}>
                                 {
                                     media.get?.check_playlist ?
                                         <i className="fas fa-bookmark"></i> :
