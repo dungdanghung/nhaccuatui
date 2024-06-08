@@ -12,7 +12,7 @@ export default function Home() {
     const [hot_songs, set_hot_songs] = useState([]);
     const [new_songs, set_new_songs] = useState([]);
     const [new_mv, set_new_mv] = useState([]);
-    const { media } = useAppContext()
+    const { media, listPlay } = useAppContext()
     const slicehotthumbnailsong = useRef<HTMLDivElement>(null);
 
 
@@ -122,7 +122,7 @@ export default function Home() {
 
                         <div className="option-all__song option-all__margin_bot">
                             <div className="option-heading option-all__song-heading ">
-                                <h3 className="option-heading-name option-all__song-heading-left mobile-hiden js__main-color">Bài Hát</h3>
+                                <h3 className="option-heading-name option-all__song-heading-left mobile-hiden js__main-color">Bài Hát Nổi Bật</h3>
                                 <div className="option-all__song-heading-right">
                                     <div className="more-list mobile-hiden">
                                         <span className="js__main-color">Tất cả</span>
@@ -164,6 +164,9 @@ export default function Home() {
                                                                     onClick={() => {
                                                                         if (media.get?.id != item['id']) {
                                                                             media.set(item)
+                                                                            if (listPlay.get == '' || listPlay.get != 'bai_hat_noi_bat') {
+                                                                                listPlay.set('bai_hat_noi_bat')
+                                                                            }
                                                                         } else if (media.play) {
                                                                             media.setplay(false)
                                                                         } else {
@@ -238,6 +241,9 @@ export default function Home() {
                                                                         onClick={() => {
                                                                             if (media.get?.id != item2['id']) {
                                                                                 media.set(item2)
+                                                                                if (listPlay.get == '' || listPlay.get != 'moi_phat_hanh') {
+                                                                                    listPlay.set('moi_phat_hanh')
+                                                                                }
                                                                             } else if (media.play) {
                                                                                 media.setplay(false)
                                                                             } else {
@@ -327,7 +333,7 @@ export default function Home() {
 
                         <div className="option-all__playlist option-all__margin_bot">
                             <div className="option-heading option-all__playlist-heading">
-                                <h3 className="option-heading-name js__main-color">MV</h3>
+                                <h3 className="option-heading-name js__main-color">MV Nổi Bật</h3>
                                 <div className="more-list mobile-hiden">
                                     <span className="js__main-color">Tất cả</span>
                                     <i className="fas fa-chevron-right js__main-color"></i>
@@ -343,6 +349,9 @@ export default function Home() {
                                                     <li className="option-all__playlist-item">
                                                         <div className="option-all__playlist-item-img-wrapper" onClick={() => {
                                                             media.set(item)
+                                                            if (listPlay.get == '' || listPlay.get != 'mv_noi_bat') {
+                                                                listPlay.set('mv_noi_bat')
+                                                            }
                                                             media.play
                                                         }}>
                                                             <div className="option-all__playlist-item-img-wrapper-action">

@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react"
 import { baseIMG, baseURL } from "../../config/api"
 import { GetLyric } from "../../api/music"
 import { Link } from "react-router-dom"
+import { addView } from "../../api/music"
 
 export default function MusicController() {
     const audio = useRef<HTMLAudioElement>(null);
@@ -152,58 +153,60 @@ export default function MusicController() {
                     setLyric(formatData)
                 })
         }
+        addView(media.get?.id)
     }, [media.get])
+
+
+    function handleMediaPlay() {
+        if (media.play) {
+            if (Media?.audio) {
+                audio.current?.play();
+            } else if (Media?.video) {
+                set_show_video(true)
+                video.current?.play()
+            }
+            setallowHandleTracktime(true)
+            setplay(true)
+            const wrap_disk = document.querySelector('.maincontent .active') as HTMLDivElement
+            if (wrap_disk) {
+                const background_disk = wrap_disk.children[0] as HTMLDivElement
+                const disk = wrap_disk.children[1] as HTMLDivElement
+                background_disk.style.left = '41%'
+                disk.style.left = '50%'
+                wrap_disk.classList.remove('pause')
+                wrap_disk.classList.add('play')
+            }
+        } else {
+            if (Media?.audio) {
+                audio.current?.pause()
+            } else if (Media?.video) {
+                video.current?.pause()
+            }
+            setallowHandleTracktime(false)
+            setplay(false)
+            const wrap_disk = document.querySelector('.maincontent .active') as HTMLDivElement
+            if (wrap_disk) {
+                const background_disk = wrap_disk.children[0] as HTMLDivElement
+                const disk = wrap_disk.children[1] as HTMLDivElement
+                background_disk.style.left = '50%'
+                disk.style.left = '25%'
+                wrap_disk.classList.remove('play')
+                wrap_disk.classList.add('pause')
+            }
+        }
+    }
 
     useEffect(() => {
         if (able_action) {
-            if (media.play) {
-                if (Media?.audio) {
-                    audio.current?.play();
-                } else if (Media?.video) {
-                    set_show_video(true)
-                    video.current?.play()
-                }
-                setallowHandleTracktime(true)
-                setplay(true)
-                const wrap_disk = document.querySelector('.maincontent .active') as HTMLDivElement
-                if (wrap_disk) {
-                    const background_disk = wrap_disk.children[0] as HTMLDivElement
-                    const disk = wrap_disk.children[1] as HTMLDivElement
-                    background_disk.style.left = '41%'
-                    disk.style.left = '50%'
-                    wrap_disk.classList.remove('pause')
-                    wrap_disk.classList.add('play')
-                }
-            } else {
-                if (Media?.audio) {
-                    audio.current?.pause()
-                } else if (Media?.video) {
-                    video.current?.pause()
-                }
-                setallowHandleTracktime(false)
-                setplay(false)
-                const wrap_disk = document.querySelector('.maincontent .active') as HTMLDivElement
-                if (wrap_disk) {
-                    const background_disk = wrap_disk.children[0] as HTMLDivElement
-                    const disk = wrap_disk.children[1] as HTMLDivElement
-                    background_disk.style.left = '50%'
-                    disk.style.left = '25%'
-                    wrap_disk.classList.remove('play')
-                    wrap_disk.classList.add('pause')
-                }
-            }
+            handleMediaPlay()
         } else {
             set_able_action(true);
         }
-    }, [play])
+    }, [media.play])
 
     useEffect(() => {
-        if (media.play) {
-            setplay(true)
-        } else {
-            setplay(false)
-        }
-    }, [media.play])
+        handleMediaPlay()
+    }, [Media])
 
 
     return (

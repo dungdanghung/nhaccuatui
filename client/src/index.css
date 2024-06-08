@@ -242,7 +242,7 @@ ul {
 }
 
 .songs-item-playing--active-onplay .songs-item-left-img-playbtn {
-  display: none;
+  /* display: none; */
 }
 
 .songs-item:hover .songs-item-right-mv,

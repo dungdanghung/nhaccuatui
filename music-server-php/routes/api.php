@@ -51,6 +51,8 @@ Route::prefix('/music')->controller(MusicController::class)->group(function () {
     Route::get('/search/{value}', 'search');
     Route::get('/search-song/{value}', 'searchSong');
     Route::get('/get-lyric/{name_lyric}', 'getLyric');
+    Route::post('add_view', 'addView')->middleware('auth:sanctum');
+    Route::get('song_history', 'getListHistory')->middleware('auth:sanctum');
 });
 
 Route::prefix('/mv')->controller(MVController::class)->group(function () {

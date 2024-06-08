@@ -166,3 +166,26 @@ export async function GetLyric(value: any) {
         throw new Error(error.message);
     }
 }
+
+export async function addView(id: number | undefined) {
+    if (id) {
+        try {
+            await request.post("/music/add_view/", { 'id': id })
+        } catch (error: any) {
+            console.log('\x1b[31m%s\x1b[0m', `err users data: ${error.message}`)
+            throw new Error(error.message);
+        }
+    }
+}
+
+export async function getListHistory(limit: number | undefined) {
+    try {
+        const rs = await request.get(`/music/song_history${limit ? '?start_from=' + limit : ''}`)
+        if (rs.data) {
+            return rs.data
+        }
+    } catch (error: any) {
+        console.log('\x1b[31m%s\x1b[0m', `err users data: ${error.message}`)
+        throw new Error(error.message);
+    }
+}

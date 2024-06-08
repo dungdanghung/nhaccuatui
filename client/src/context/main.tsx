@@ -1,11 +1,11 @@
-import { ReactNode, createContext, useRef, useState } from 'react'
+import { ReactNode, createContext, useEffect, useState } from 'react'
 import { User } from '../models/user'
 type AppContextType = ReturnType<typeof useAppContextValue>
 
 const init: unknown = {}
 export const AppContext = createContext<AppContextType>(init as AppContextType)
 
-type song = {
+export type song = {
     'id': number | undefined,
     "title": string | undefined,
     "artists": string | undefined,
@@ -51,11 +51,20 @@ function useAppContextValue() {
     const [user, setUser] = useState<User | undefined>()
     const [release_title, set_release_title] = useState<string | undefined>()
     const [formData, setFormData] = useState<FormData | undefined>()
-    const [media, set_media] = useState<mv | song>();
+    const [media, set_media] = useState<mv | song | undefined>();
     const [play, setPlay] = useState<boolean>(false)
     const [post, setPost] = useState<post>({} as post)
     const [comment, setComment] = useState([])
     const [lyric_active, setLyric_active] = useState<number | null>()
+    const [listPlay, set_listPlay] = useState<string>('')
+
+    useEffect(() => {
+        if (media) {
+            setPlay(true)
+        }
+    }, [media])
+
+
     return {
         media: {
             "get": media,
@@ -68,6 +77,10 @@ function useAppContextValue() {
             'set': setPost,
             'comment': comment,
             'setComment': setComment
+        },
+        listPlay: {
+            'get': listPlay,
+            'set': set_listPlay
         },
         user: {
             user,

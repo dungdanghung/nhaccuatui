@@ -59,8 +59,23 @@
 }
 
 .nextsong__option-wrapper-listplay.nextsong__option-wrapper--active,
-.nextsong__option-wrapper-history.nextsong__option-wrapper--active {
+.nextsong__option-wrapper-history.nextsong__option-wrapper--active,
+.nextsong__option-alarm.nextsong__option-wrapper--active {
     background-color: #816399;
+}
+
+.nextsong__option-alarm {
+    position: relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        top: 0;
+        left: 0;
+        z-index: 7;
+    }
 }
 
 .nextsong__option-alarm,
@@ -303,10 +318,9 @@
 
 .nextsong__last-list {
     margin: 0 0 0 4px;
-    padding: 0;
     list-style: none;
-    /* 168px là trừ khoảng height phía trên chữ tiếp theo  */
-    /* height: calc(100vh - var(--music-control-height) - 168px);  */
+    padding: 0 20px;
+    width: 100%;
 }
 
 .nextsong__last-item:hover .nextsong__item-playbtn {

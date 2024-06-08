@@ -12,6 +12,7 @@ use App\Models\InteractSong;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\ListeningHistory;
 use Illuminate\Support\Facades\Mail;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
@@ -438,6 +439,86 @@ class MusicController extends Controller
             DB::rollBack();
             return Reply::error(__('messages.something_went_wrong'));
         }
+    }
+
+    public function addView(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user->hasPermissionTo('view_song') || $user->status == "disable") {
+            return Reply::error(__('messages.you_do_not_have_the_right_to_use_this_feature'));
+        }
+        $rules = [
+            'id' => 'required|integer',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return Reply::error(__('messages.something_went_wrong'));
+        }
+
+        $song = Song::where('id', $request->id)->where('status', 'accept')->first();
+        if (empty($song)) {
+            return Reply::error(__('messages.something_went_wrong'));
+        }
+
+        DB::beginTransaction();
+        try {
+            ListeningHistory::where('user_id', $user->id)->where('song_id', $song->id)->delete();
+            ListeningHistory::create([
+                'user_id' => $user->id,
+                'song_id' => $song->id,
+            ]);
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return Reply::error(__('messages.something_went_wrong'));
+        }
+    }
+
+    public function getListHistory(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user->hasPermissionTo('view_song') || $user->status == "disable") {
+            return Reply::error(__('messages.you_do_not_have_the_right_to_use_this_feature'));
+        }
+
+        $rules = [
+            'start_from' => 'integer',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return Reply::error(__('messages.something_went_wrong'));
+        }
+
+        if (!empty($request->start_from)) {
+            $listHistory = ListeningHistory::where('user_id', $user->id)->where('id', '<', $request->start_from)->orderBy('id', 'desc')->limit(20)->get();
+        } else {
+            $listHistory = ListeningHistory::where('user_id', $user->id)->limit(20)->orderBy('id', 'desc')->get();
+        }
+
+        $data = [];
+        foreach ($listHistory as $item) {
+            if ($item->song->status == 'accept') {
+
+                $interact = $item->song->interact_heart->where('song_id', $item->song->id)->where('user_id', $user->id)->where('type', 'add_heart_song')->first();
+                $checkPlaylist = $item->song->playlist->where('song_id', $item->song->id)->where('user_id', $user->id)->first();
+
+                array_push($data, [
+                    'id' => $item->song->id,
+                    'title' => $item->song->title,
+                    'artists' => $item->song->artists,
+                    'audio' => $item->song->audio,
+                    'image' => $item->song->image,
+                    'heart' => $item->song->heart,
+                    'check_heart' => $interact ? true : false,
+                    'check_playlist' => $checkPlaylist ? true : false,
+                    'lyric_file' => $item->song->lyric_file
+                ]);
+            }
+        }
+
+        return response()->json($data);
     }
 
     public function getMySongUpload()
