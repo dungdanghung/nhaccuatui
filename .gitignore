@@ -19,3 +19,4 @@ yarn-error.log
 /.vscode
 /client/node_modules
 /music-server-php/vendor
+/music-server-nodejs/node_modules

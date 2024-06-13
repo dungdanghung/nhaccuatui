@@ -13,11 +13,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\ListeningHistory;
+use Error;
 use Illuminate\Support\Facades\Mail;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Http;
 
 
 class MusicController extends Controller
@@ -86,17 +88,19 @@ class MusicController extends Controller
 
     public function create(Request $request)
     {
+
         if (!auth()->user()->hasPermissionTo('upload_song')) {
             return Reply::error(__('messages.you_do_not_have_the_right_to_use_this_feature'));
         }
+
         $rules = [
-            'language' => 'required|max:2',
+            'language' => 'required',
             'title' => 'required',
             'artists' => "required|array|min:1",
             'primary_genre' => 'required',
             'secondary_genre' => 'required',
             'composition_copyright' => 'required',
-            // 'record_laber_name' => 'required',
+            'record_laber_name' => 'required',
             'originaly_released' => 'required|date_format:Y-m-d',
             'audio' => 'required|file|mimes:mp3|max:51200',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:4048',
@@ -145,7 +149,15 @@ class MusicController extends Controller
             $input['thumbnail'] = $nameImage;
             $input['user_id'] = auth()->user()->id;
 
-            Song::create($input);
+            $newSong = Song::create($input);
+            HotSong::create([
+                'song_id' => $newSong->id,
+            ]);
+
+            $response = Http::post(env('BASE_URL') . '/api/media/create', [
+                'song' => $newSong
+            ]);
+
             Mail::to('dunggsx@gmail.com')->send(new MyMail("upload", 'yêu cầu phát hành bài hát từ ' . auth()->user()->user_name));
             DB::commit();
         } catch (\Throwable $th) {
@@ -250,6 +262,9 @@ class MusicController extends Controller
         try {
             $input = $request->only(['language', 'title', 'artists', 'primary_genre', 'secondary_genre', 'composition_copyright', 'record_laber_name', 'originaly_released']);
             $song->update($input);
+            $response = Http::post(env('BASE_URL') . '/api/media/update', [
+                'song' => $song
+            ]);
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -305,6 +320,11 @@ class MusicController extends Controller
                     'status' => "canceled"
                 ]);
             }
+
+            $response = Http::post(env('BASE_URL') . '/api/media/update', [
+                'song' => $song
+            ]);
+
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -330,18 +350,18 @@ class MusicController extends Controller
         }
         $format_songs = [];
         foreach ($songs as $song) {
-            $interact = $song->interact_heart->where('song_id', $song->id)->where('user_id', $user->id)->where('type', 'add_heart_song')->first();
-            $checkPlaylist = $song->playlist->where('song_id', $song->id)->where('user_id', $user->id)->first();
+            $interact = $song->song->interact_heart->where('song_id', $song->id)->where('user_id', $user->id)->where('type', 'add_heart_song')->first();
+            $checkPlaylist = $song->song->playlist->where('song_id', $song->id)->where('user_id', $user->id)->first();
             array_push($format_songs, [
-                'id' => $song->id,
-                'title' => $song->title,
-                'artists' => $song->artists,
-                'audio' => $song->audio,
-                'image' => $song->image,
-                'heart' => $song->heart,
+                'id' => $song->song->id,
+                'title' => $song->song->title,
+                'artists' => $song->song->artists,
+                'audio' => $song->song->audio,
+                'image' => $song->song->image,
+                'heart' => $song->song->heart,
                 'check_heart' => $interact ? true : false,
                 'check_playlist' => $checkPlaylist ? true : false,
-                'lyric_file' => $song->lyric_file
+                'lyric_file' => $song->song->lyric_file
             ]);
         }
         return response()->json($format_songs);
@@ -468,6 +488,11 @@ class MusicController extends Controller
                 'user_id' => $user->id,
                 'song_id' => $song->id,
             ]);
+
+            $response = Http::post(env('BASE_URL') . '/api/media/addView', [
+                'songID' => $song->id
+            ]);
+
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -549,5 +574,47 @@ class MusicController extends Controller
 
             return response()->json($song);
         }
+    }
+
+    public function updateHotSong(Request $request)
+    {
+        return $request->data;
+        $listKey = [];
+        foreach ($request->data as $item) {
+            array_push($listKey, $item['id']);
+        }
+        $listSongHot = HotSong::whereIn('song_id', $listKey)->get();
+
+        DB::beginTransaction();
+        try {
+            foreach ($request->data as $item) {
+                $song = $listSongHot->where('song_id', $item['id'])->first();
+                if (!empty($song->value)) {
+                    $start_time = Carbon::parse($song->start_time);
+                    $end_time = Carbon::parse($item['end_time']);
+                    $duration_time = $start_time->diffInMinutes($end_time);
+                    $duration_time = $duration_time / 10;
+                    $total_value = ($song->value + $item['value']) / $duration_time;
+                    $item->update([
+                        'start_time' => Carbon::parse($item['start_time']),
+                        'end_time' => $end_time,
+                        'value' => $total_value
+                    ]);
+                } else {
+                    $start_time = Carbon::parse($item['start_time']);
+                    $end_time = Carbon::parse($item['end_time']);
+                    $item->update([
+                        'start_time' => $start_time,
+                        'end_time' => $end_time,
+                        'value' => $item['value']
+                    ]);
+                }
+            }
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->status(500);
+        }
+        return response()->status(200);
     }
 }

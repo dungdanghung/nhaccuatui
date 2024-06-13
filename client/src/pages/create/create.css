@@ -268,9 +268,10 @@
     flex: 1;
     display: flex;
     align-items: center;
-    /* padding-left: 10px; */
+    position: relative;
     width: max-content;
 }
+
 
 .form-item-2 .icon {
     height: 40px;
