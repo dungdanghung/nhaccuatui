@@ -85,7 +85,7 @@ export default function CreateSong() {
                                 </Link>
                             </div>
                             <div className='release-detail-option-item'>
-                                <Link to={"/create/add_artwork"} className='option'>
+                                <Link to={"/create/add_artwork_song"} className='option'>
                                     Add Artwork
                                     {
                                         song_create.formData?.get('image') ?

@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\AutherController;
+use App\Http\Controllers\api\ManagerController;
 use App\Http\Controllers\api\MusicController;
 use App\Http\Controllers\api\MVController;
 use App\Http\Controllers\api\PlaylistController;
@@ -28,9 +29,11 @@ Route::prefix('/auth')->controller(AutherController::class)->group(function () {
 });
 Route::prefix('/user')->controller(UserController::class)->group(function () {
     Route::get('/', 'index')->middleware('auth:sanctum');
+    Route::get('/getUser/{id}', 'getUserByID');
     Route::post('change-avatar', 'setAvatar')->middleware('auth:sanctum');
     Route::post('change-background', 'setBackground')->middleware('auth:sanctum');
     Route::post('update', 'update')->middleware('auth:sanctum');
+    Route::post('/getuserupload', 'getUserUpload')->middleware('auth:sanctum');
 });
 Route::prefix('/music')->controller(MusicController::class)->group(function () {
     Route::post('/validate_audio', 'validateFileAudio')->middleware('auth:sanctum');
@@ -40,6 +43,7 @@ Route::prefix('/music')->controller(MusicController::class)->group(function () {
     Route::post('/create', 'create')->middleware('auth:sanctum');
     Route::post('/getsongupload', 'getSongUpload')->middleware('auth:sanctum');
     Route::post('/getsongdetail', 'getSongDetail')->middleware('auth:sanctum');
+    Route::post('/get-song-detail-manager', 'getMediaDetail')->middleware('auth:sanctum');
     Route::post('/editsongdetail', 'editSongDetail')->middleware('auth:sanctum');
     Route::get('/getsong/{name_audio}', 'getSong');
     Route::post('/changestatus', 'statusChange')->middleware('auth:sanctum');
@@ -49,10 +53,38 @@ Route::prefix('/music')->controller(MusicController::class)->group(function () {
     Route::post('/add-heart', 'addHeart')->middleware('auth:sanctum');
     Route::get('/my-song-upload', 'getMySongUpload')->middleware('auth:sanctum');
     Route::get('/search/{value}', 'search');
+    Route::get('/searchManager/{value}', 'searchMediaUpload');
     Route::get('/search-song/{value}', 'searchSong');
     Route::get('/get-lyric/{name_lyric}', 'getLyric');
     Route::post('add_view', 'addView')->middleware('auth:sanctum');
     Route::get('song_history', 'getListHistory')->middleware('auth:sanctum');
+    Route::post('update-song-interact', 'updateHotSong');
+});
+
+Route::prefix('/manager')->controller(ManagerController::class)->group(function () {
+    Route::get('/getChartUser', 'getChartUser')->middleware('auth:sanctum');
+    Route::get('/getChartSong', 'getChartSong')->middleware('auth:sanctum');
+    Route::get('/getChartMV', 'getChartMV')->middleware('auth:sanctum');
+
+    Route::get('/getChartSongAccept', 'getSongAccept')->middleware('auth:sanctum');
+    Route::get('/getChartMVAccept', 'getMVAccept')->middleware('auth:sanctum');
+
+    Route::get('/getChartUserOnline', 'getChartUserOnline')->middleware('auth:sanctum');
+    Route::get('/getRatioUser', 'ratioUserType')->middleware('auth:sanctum');
+    Route::get('/getRatioSong', 'ratioSongType')->middleware('auth:sanctum');
+    Route::get('/getRatioMV', 'ratioMVType')->middleware('auth:sanctum');
+
+
+    Route::get('/getNewUser', 'getUserCreateToday')->middleware('auth:sanctum');
+    Route::get('/getNewSong', 'getSongCreateToday')->middleware('auth:sanctum');
+    Route::get('/getNewMV', 'getMVCreateToday')->middleware('auth:sanctum');
+
+
+    Route::get('/getFeaturedUser', 'getFeaturedUser')->middleware('auth:sanctum');
+    Route::get('/getFeaturedSong', 'getFeaturedSong')->middleware('auth:sanctum');
+    Route::get('/getFeaturedMV', 'getFeaturedMV')->middleware('auth:sanctum');
+
+    Route::get('/getCountDetail', 'getDetailMnager')->middleware('auth:sanctum');
 });
 
 Route::prefix('/mv')->controller(MVController::class)->group(function () {
@@ -68,10 +100,10 @@ Route::prefix('/mv')->controller(MVController::class)->group(function () {
 
 Route::prefix('/post')->controller(PostController::class)->group(function () {
     Route::post('/create', 'store')->middleware('auth:sanctum');
-    Route::get('/get-posts', 'getPosts')->middleware('auth:sanctum');
+    Route::get('/get-posts/{user_id}', 'getPosts')->middleware('auth:sanctum');
     Route::post('/add-heart', 'addHeart')->middleware('auth:sanctum');
     Route::post('/add-comment', 'storeComment')->middleware('auth:sanctum');
-    Route::get('/get-comment/{id}', 'getComments')->middleware('auth:sanctum');
+    Route::get('/get-comment/{id}/{type}', 'getComments')->middleware('auth:sanctum');
     Route::post('/delete-comment', 'deleteComment')->middleware('auth:sanctum');
 });
 

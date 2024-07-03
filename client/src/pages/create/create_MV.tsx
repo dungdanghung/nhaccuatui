@@ -52,7 +52,7 @@ export default function Create_mv() {
                                 </Link>
                             </div>
                             <div className='release-detail-option-item'>
-                                <Link to={"/create/add_artwork"} className='option'>
+                                <Link to={"/create/add_artwork_mv"} className='option'>
                                     Add Artwork
                                     {
                                         mv_create.formData?.get('image') ?

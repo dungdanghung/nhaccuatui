@@ -82,7 +82,7 @@ export default function Header({ type_header = "full" }) {
         <div className="header-wrapper">
             <div className="header">
                 {
-                    type_header == "only_heard" ? <Link to={'/'} className="header__logo"></Link> : <></>
+                    type_header == "only_heard" ? <a href={'/'} className="header__logo"></a> : <></>
                 }
                 {
                     type_header == "full" ?
@@ -190,10 +190,12 @@ export default function Header({ type_header = "full" }) {
                             </li>
                         </ul>
                     </div>
-
-                    <Link to={'/profile'} className="header__upload wrap-avatar">
-                        <img src={`${baseIMG}img/avatar/${user.user?.avatar}`} alt="user" className="header__user-img" />
-                    </Link>
+                    {
+                        user.user?.id ?
+                            <Link to={'/profile?id=' + user.user?.id} className="header__upload wrap-avatar">
+                                <img src={`${baseIMG}img/avatar/${user.user?.avatar}`} alt="user" className="header__user-img" />
+                            </Link> : <></>
+                    }
                 </div>
             </div>
         </div>

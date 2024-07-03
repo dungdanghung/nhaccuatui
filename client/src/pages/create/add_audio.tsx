@@ -87,7 +87,7 @@ export default function Add_audio() {
         const fileInput = document.querySelector(".file-input") as HTMLInputElement
         const file = fileInput.files as FileList
         song_create.formData?.append('audio', file[0])
-        navigate('/create')
+        navigate('/create/song')
     }
 
     useEffect(() => {

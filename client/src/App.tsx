@@ -21,6 +21,8 @@ const Follow = lazy(() => import('./pages/follow/index'))
 const Radio = lazy(() => import('./pages/radio/index'))
 const Zingchart = lazy(() => import('./pages/zingchart/index'))
 const Search = lazy(() => import('./pages/search/index'))
+const MV_detail_manager = lazy(() => import('./pages/manager/mv_detail'))
+const Dashboard = lazy(() => import('./pages/manager/dashboard'))
 const Profile = lazy(() => import('./pages/profile/index'))
 const Add_mv = lazy(() => import('./pages/create/add_mv'))
 const Song_detail = lazy(() => import('./pages/song-detail/index'))
@@ -31,6 +33,7 @@ import LayoutManager from "./layout/layout_manager"
 import "./grid.css"
 import Detail from "./pages/manager/detail"
 import LayoutProfile from "./layout/Layout_profile"
+
 
 const router = createBrowserRouter([
   {
@@ -109,8 +112,12 @@ const router = createBrowserRouter([
             path: 'add_audio',
             element: <Suspense fallback={<Loader display={true} />}><Add_audio /></Suspense>,
           }, {
-            path: 'add_artwork',
-            element: <Suspense fallback={<Loader display={true} />}><Add_artwork /></Suspense>,
+            path: 'add_artwork_song',
+            element: <Suspense fallback={<Loader display={true} />}><Add_artwork type={'song'} /></Suspense>,
+          },
+          {
+            path: 'add_artwork_mv',
+            element: <Suspense fallback={<Loader display={true} />}><Add_artwork type={'mv'} /></Suspense>,
           }, {
             path: 'add_lyric',
             element: <Suspense fallback={<Loader display={true} />}><Add_lyric /></Suspense>,
@@ -133,12 +140,22 @@ const router = createBrowserRouter([
             element: <Suspense fallback={<Loader display={true} />}><Manager_mv /></Suspense>,
           },
           {
+            path: 'dashboard',
+            element: <Suspense fallback={<Loader display={true} />}><Dashboard /></Suspense>,
+          },
+        ]
+      },
+      {
+        path: 'manager',
+        element: <LayoutManager play_controller={true} />,
+        children: [
+          {
             path: 'music/detail/:id',
             element: <Suspense fallback={<Loader display={true} />}><Detail /></Suspense>,
           },
           {
             path: 'mv/detail/:id',
-            element: <Suspense fallback={<Loader display={true} />}><MV_detail /></Suspense>,
+            element: <Suspense fallback={<Loader display={true} />}><MV_detail_manager /></Suspense>,
           }
         ]
       },

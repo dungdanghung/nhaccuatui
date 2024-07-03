@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import "./profile.css"
-import { GetUser } from "../../api/user"
+import { GetUser, GetUserByID } from "../../api/user"
 import { baseIMG } from "../../config/api"
 import Change_avatar_modal from "./change_avatar_modal"
 import Profile_Item from "./profile_item"
@@ -11,12 +11,14 @@ import Change_background_modal from "./change_background_modal"
 import { GetPosts } from "../../api/post"
 import Show_all_comment from "./show_all_comment"
 import Edit_profile from "./edit_profile"
+import { useSearchParams } from "react-router-dom"
 
 function Profile() {
-
+    const [searchParams, setSearchParams] = useSearchParams();
     const [datacontent, setdatacontent] = useState([])
     const [popupuploadsong, setpopupuploadsong] = useState("off")
     const [modal_edit_profile, set_modal_edit_profile] = useState("off")
+    const [userByID, setUserByID] = useState<any>('')
 
     const { user } = useAppContext()
     const navigate = useNavigate()
@@ -86,6 +88,7 @@ function Profile() {
     }
 
     useEffect(() => {
+        const value = searchParams.get('id')
         GetUser()
             .then(rs => {
                 user.setUser(rs.user)
@@ -94,10 +97,19 @@ function Profile() {
             .catch(() => {
                 navigate('/auth/login')
             })
-        GetPosts()
-            .then((rs) => {
-                setdatacontent(rs)
-            })
+        if (value) {
+            GetPosts(value)
+                .then((rs) => {
+                    setdatacontent(rs)
+                })
+        }
+
+        if (value != user.user?.id.toString()) {
+            GetUserByID(value)
+                .then((rs) => {
+                    setUserByID(rs)
+                })
+        }
     }, [])
 
     if (user) {
@@ -107,12 +119,20 @@ function Profile() {
 
                     <div className="contentuser">
                         <div className="wrapcontentuser">
-                            <div className="backgroundavatar">
+                            <div className="backgroundavatar" style={{ minWidth: '1556px' }}>
                                 {
-                                    user.user?.background_image ?
-                                        <img src={`${baseIMG}img/background/${user.user?.background_image}`} />
-                                        :
-                                        <></>
+
+                                    userByID != '' ?
+
+                                        userByID?.background_image ?
+                                            <img src={`${baseIMG}img/background/${userByID['background_image']}`} />
+                                            :
+                                            <></> :
+
+                                        user.user?.background_image ?
+                                            <img src={`${baseIMG}img/background/${user.user?.background_image}`} />
+                                            :
+                                            <></>
                                 }
 
                                 <div className="wrapbtnfuntion">
@@ -128,11 +148,19 @@ function Profile() {
                             </div>
                             <div className="user">
                                 <div className="avatar">
-                                    <img src={`${baseIMG}img/avatar/${user.user?.avatar}`} />
+                                    {
+                                        userByID?.avatar ?
+                                            <img src={`${baseIMG}img/avatar/${userByID.avatar}`} /> :
+                                            <img src={`${baseIMG}img/avatar/${user.user?.avatar}`} />
+                                    }
                                 </div>
                                 <div className="detail">
                                     <div className="username">
-                                        {user.user?.user_name}
+                                        {
+                                            userByID?.user_name ?
+                                                userByID?.user_name :
+                                                user.user?.user_name
+                                        }
                                     </div>
                                     <div className="follow">
                                         <div className="followitem">
@@ -169,6 +197,7 @@ function Profile() {
                         }
 
                     </div>
+
                     <div className="profilecontent">
                         <div className="wrapcontent">
                             <div className="sidebarcontent">
@@ -191,7 +220,7 @@ function Profile() {
                                         datacontent.map((item) => {
                                             return (
                                                 <div key={item['id']}>
-                                                    <Profile_Item data={item} />
+                                                    <Profile_Item data={item} type={item['type']} />
                                                 </div>
                                             )
                                         })

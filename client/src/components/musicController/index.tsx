@@ -218,7 +218,10 @@ export default function MusicController() {
                             <div className="music-control__left-img">
                                 {
                                     Media?.image ?
-                                        <img className="music-controler-img" src={`${baseIMG}uploads/image/168x94/${Media?.image}`}></img> :
+                                        <img className="music-controler-img" src={`${baseIMG}uploads/image/168x94/${Media?.image}`} onError={(e) => {
+                                            const element = e.target as HTMLImageElement
+                                            element.src = 'src/assets/orther/song.jpg'
+                                        }}></img> :
                                         <img className="music-controler-img" src={`src/assets/orther/song.jpg`}></img>
                                 }
                             </div>
@@ -263,7 +266,7 @@ export default function MusicController() {
                         </div>
                         {
                             Media?.audio ?
-                                <audio id="audio" ref={audio} src={`${baseURL}music/getsong/${Media?.audio}`} onTimeUpdate={mediaPlay} onEnded={() => media.setplay(false)} onLoadedMetadata={setDuration}></audio> :
+                                <audio id="audio" ref={audio} src={`${baseURL}music/getsong/${Media?.audio ? Media.audio : Media.media}`} onTimeUpdate={mediaPlay} onEnded={() => media.setplay(false)} onLoadedMetadata={setDuration}></audio> :
                                 <></>
                         }
                     </div>
@@ -286,7 +289,7 @@ export default function MusicController() {
                 </div>
             </div>
 
-            <div className="wrap_video" onClick={showvideo} style={{ display: show_video ? 'flex' : 'none' }}>
+            <div className="wrap_video" onClick={showvideo} style={{ display: show_video ? 'flex' : 'none', zIndex: '4' }}>
                 <div className="video">
                     <video ref={video} id="video" src={`${baseURL}mv/getmv/${Media?.video}`} onTimeUpdate={mediaPlay} onEnded={() => media.setplay(false)} onLoadedMetadata={setDuration} />
                 </div>

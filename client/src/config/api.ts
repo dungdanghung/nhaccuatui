@@ -2,7 +2,6 @@ import axios, { AxiosError, AxiosResponse } from 'axios'
 import style_loader from "../components/loading/loader.module.css"
 import toast from '../helper/toast'
 
-
 const devPorts = '3000'
 let baseURL = ''
 let baseIMG = ''
@@ -74,6 +73,7 @@ request.interceptors.response.use(
             return Promise.reject(error)
         }
         const response = error.response as AxiosResponse
+
         if (response.data) {
             if (response.data.message && response.headers['content-type'] === 'application/json' && !response.request.responseURL.includes('getuser')) {
                 toast.error(response.data.message)

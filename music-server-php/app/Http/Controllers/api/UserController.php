@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\api;
 
+use Carbon\Carbon;
+use App\Models\User;
 use App\Helper\Reply;
+use App\Models\Follow;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use User;
+
 
 class UserController extends Controller
 {
@@ -88,6 +91,53 @@ class UserController extends Controller
         return Reply::success();
     }
 
+
+    public function getUserUpload(Request $request)
+    {
+        if (!auth()->user()->hasPermissionTo('manager_song')) {
+            return Reply::error(__('messages.you_do_not_have_the_right_to_use_this_feature'));
+        }
+
+        try {
+            $users = User::orderBy('created_at', 'desc')
+                ->limit(30)
+                ->get();
+            $format_user = [];
+            foreach ($users as $user) {
+                array_push($format_user, [
+                    'id' => $user->id,
+                    'user_name' => $user->user_name,
+                    'avatar' => $user->avatar,
+                    'date' => Carbon::parse($user->created_at),
+                    'status' => $user->status
+                ]);
+            }
+        } catch (\Throwable $th) {
+            return Reply::error(__('messages.something_went_wrong'));
+        }
+
+        return response()->json($format_user);
+    }
+
+    public function getUserByID($id)
+    {
+        if (empty($id)) {
+            return Reply::error(__('messages.something_went_wrong'));
+        } else {
+            $user = User::where('id', $id)->first();
+            $follow_count = Follow::where('user_id', $id)->count();
+            $count_follow = Follow::where('follower', $id)->count();
+            $format = [
+                'id' => $user->id,
+                'user_name' => $user->user_name,
+                'avatar' => $user->avatar,
+                'background_image' => $user->background_image,
+                'follower' => $follow_count,
+                'count_follow' => $count_follow
+            ];
+            return response()->json($format);
+        }
+    }
 
     public function update(Request $request)
     {

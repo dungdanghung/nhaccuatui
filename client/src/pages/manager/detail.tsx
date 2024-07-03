@@ -3,10 +3,13 @@ import { useParams } from 'react-router-dom';
 import "./manager.css"
 import Select_option_type_song from "../../components/select_option/select_option_type_song";
 import Select_option_country from "../../components/select_option/select_option_country"
-import { GetSongDetail } from "../../api/music";
+import { GetLyric, GetSongMediaDetail } from "../../api/music";
 import { baseIMG } from "../../config/api";
 import { EditSongDetail } from "../../api/music";
 import { useAppContext } from "../../context";
+import listCountry from '../../helper/country_data.json'
+import listGenre from '../../helper/primary_genre_music.json'
+import ModalTextLyric from "../../components/modal/modal_text_lyric";
 
 export default function Detail() {
     const [song, setsong] = useState<any>([]);
@@ -14,10 +17,12 @@ export default function Detail() {
     const [artists, setartists] = useState([]);
     const [show_image, set_show_image] = useState(false)
     const { media } = useAppContext()
+    const [lyric, setLyric] = useState([])
+
 
     let { id } = useParams();
     useEffect(() => {
-        GetSongDetail(id)
+        GetSongMediaDetail(id)
             .then((rs) => {
                 if (rs) {
                     setsong(rs);
@@ -46,21 +51,54 @@ export default function Detail() {
             const date1 = new Date(song['originaly_released'])
             const dateElement = document.querySelector('.rriginaly_released') as HTMLInputElement
             dateElement.value = date1.toISOString().split('T')[0]
+
+            listCountry.every((item) => {
+                if (item.key == song['language']) {
+                    const a = document.querySelector('#country') as HTMLInputElement
+                    a.value = item.value
+                    return false
+                }
+                return true
+            })
+            listGenre.every((item) => {
+                if (item == song['primary_genre'] || item == song['secondary_genre']) {
+                    if (item == song['primary_genre']) {
+                        const a = document.querySelector('#primary_genre') as HTMLInputElement
+                        a.value = item
+                    } else {
+                        const a = document.querySelector('#secondary_genre') as HTMLInputElement
+                        a.value = item
+                    }
+                }
+                return true
+            })
+
+            if (song['lyric_file']) {
+                GetLyric(song['lyric_file'])
+                    .then((rs: string) => {
+                        return rs.trim().split("\n")
+                    })
+                    .then((rs) => {
+                        const formatData = [] as any
+                        rs.forEach((item, index) => {
+                            let value = "";
+                            let line = item.trim();
+                            let minute = parseInt(line.substr(1, 2));
+                            let second = parseInt(line.substr(4, 5));
+                            let milisecond = line.substr(6, 3);
+                            if (minute != 0) value = minute * 60 + second + milisecond
+                            else value = minute + second + milisecond
+                            let text = line.substr(line.indexOf(']') + 1, line.length).trim();
+                            formatData.push({
+                                'value': value,
+                                'text': text
+                            })
+                        })
+                        setLyric(formatData)
+                    })
+            }
         }
     }, [song])
-
-    function test1(e: any) {
-        const a = document.querySelector('.Language_value') as HTMLInputElement
-        a.value = e.target.getAttribute('value')
-    }
-    function test2(e: any) {
-        const a = document.querySelector('.primary_genre') as HTMLInputElement
-        a.value = e.target.getAttribute('value')
-    }
-    function test3(e: any) {
-        const a = document.querySelector('.secondary_genre') as HTMLInputElement
-        a.value = e.target.getAttribute('value')
-    }
 
     function addArtistInput() {
         const a = document.querySelector(".form-item .artist-wrap") as HTMLDivElement
@@ -94,7 +132,13 @@ export default function Detail() {
         for (const element of listInput) {
             const a = element as HTMLInputElement
             if (a.name != "vehicle") {
-                if (a.className == "lyric_input") {
+                if (a.name == 'language') {
+                    listCountry.forEach((item) => {
+                        if (item.value == a.value) {
+                            formDate.append('language', item.key)
+                        }
+                    })
+                } else if (a.className == "lyric_input") {
                     const files = a.files as FileList
                     formDate.append('lyric_file', files[0])
                 } else {
@@ -131,6 +175,7 @@ export default function Detail() {
                                 <i className="fas fa-play pausemusic"></i>
                         }
                     </div>
+                    <ModalTextLyric text={lyric} />
                 </div>
             </div>
 
@@ -146,10 +191,9 @@ export default function Detail() {
                             <span className="text">
                                 Language:
                             </span>
-                            <input name="language" className="Language_value" type="text" defaultValue={song['language']} hidden={true}></input>
                         </div>
                         <div className="form-item-2">
-                            <Select_option_country fc_click={test1} value={song['language']} />
+                            <Select_option_country />
                         </div>
                     </div>
                     <div className="form-item">
@@ -205,7 +249,7 @@ export default function Detail() {
                             <input className="primary_genre" name="primary_genre" defaultValue={song['primary_genre']} hidden></input>
                         </div>
                         <div className="form-item-2">
-                            <Select_option_type_song fc_click={test2} value={song['primary_genre']} />
+                            <Select_option_type_song type={'primary_genre'} />
                         </div>
                     </div>
                     <div className="form-item">
@@ -216,7 +260,7 @@ export default function Detail() {
                             <input className="secondary_genre" name="secondary_genre" defaultValue={song['secondary_genre']} hidden></input>
                         </div>
                         <div className="form-item-2">
-                            <Select_option_type_song fc_click={test3} value={song['secondary_genre']} />
+                            <Select_option_type_song type={'secondary_genre'} />
                         </div>
                     </div>
                     <div className="form-item">

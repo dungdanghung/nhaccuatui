@@ -13,9 +13,9 @@ export async function create(formData: FormData) {
     }
 }
 
-export async function GetPosts() {
+export async function GetPosts(id: any) {
     try {
-        const rs = await request.get("/post/get-posts")
+        const rs = await request.get("/post/get-posts/" + id)
         if (rs.data) {
             return rs.data
         }
@@ -35,9 +35,9 @@ export async function GetPost() {
     }
 }
 
-export async function AddHeart(id: number) {
+export async function AddHeart(id: number, type: string) {
     try {
-        await request.post("/post/add-heart", { 'post_id': id })
+        await request.post("/post/add-heart", { 'post_id': id, 'type': type })
     } catch (error: any) {
         console.log('\x1b[31m%s\x1b[0m', `err users data: ${error.message}`)
     }
@@ -57,9 +57,9 @@ export async function AddComment(formData: FormData) {
     }
 }
 
-export async function GetComments(id: number) {
+export async function GetComments(id: number, type: string) {
     try {
-        const rs = await request.get("/post/get-comment/" + id)
+        const rs = await request.get("/post/get-comment/" + id + '/' + type)
         if (rs.data) {
             return rs.data
         }

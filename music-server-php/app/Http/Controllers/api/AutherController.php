@@ -8,9 +8,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Permission;
 
 class AutherController extends Controller
 {
+
+
     public function Login(Request $request)
     {
         $request->validate([
@@ -19,6 +22,38 @@ class AutherController extends Controller
         ]);
         try {
             $user = User::where('user_name', $request->username)->first();
+
+            // $permissions = [
+            //     "login",
+            //     "register",
+            //     "change_password",
+            //     "upload_song",
+            //     "update_song",
+            //     "delete_song",
+            //     "view_song",
+            //     "upload_mv",
+            //     "update_mv",
+            //     "delete_mv",
+            //     "view_mv",
+            //     // "manager_mv",
+            //     // "manager_song",
+            //     "download_song",
+            //     "create_post",
+            //     "view_post",
+            //     "add_comment",
+            //     "view_comment",
+            //     "delete_comment",
+            //     "view_zingchart",
+            //     "add_playlist",
+            // ];
+
+            // foreach ($permissions as $permission) {
+            //     $new_permission = Permission::where('name', $permission)->first();
+            //     $new_permission->assignRole('User');
+            // }
+
+
+
             if (!$user) return Reply::error(__('messages.user_not_found'), 404);
             if (!Hash::check($request->password, $user->password)) {
                 return Reply::error(__('messages.incorrect_password'), 400);
@@ -61,6 +96,9 @@ class AutherController extends Controller
             $input['phone_number'] = $phone;
             $input['password'] = Hash::make($request->password);
             $new_user = User::Create($input);
+
+            $new_user->assignRole('User');
+
             DB::commit();
             return Reply::success();
         } catch (\Exception $e) {

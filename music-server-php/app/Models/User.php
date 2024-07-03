@@ -12,10 +12,11 @@ use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Activitylog\ActivityLogger;
 
 /**
  * Class User
- * 
+ *
  * @property int $id
  * @property string $first_name
  * @property string $last_name
@@ -73,4 +74,13 @@ class User extends Model
         'language',
         'remember_token'
     ];
+
+    public function activity_log()
+    {
+        return $this->hasMany(ActivityLogger::class, 'causer_id', 'id');
+    }
+    public function user_has_role()
+    {
+        return $this->hasOne(ModelHasRole::class, 'model_id', 'id');
+    }
 }

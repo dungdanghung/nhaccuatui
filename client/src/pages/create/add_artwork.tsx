@@ -5,7 +5,7 @@ import { baseURL, getTokenHeader } from "../../config/api";
 import toast from "../../helper/toast";
 import { useAppContext } from "../../context";
 
-export default function Add_artwork() {
+export default function Add_artwork({ type }: any) {
     const [form, setform] = useState<HTMLFormElement | undefined>();
     const [fileInput, setfileInput] = useState<HTMLInputElement | undefined>()
     const [progressArea, serprogressArea] = useState<HTMLSelectElement | undefined>()
@@ -87,7 +87,7 @@ export default function Add_artwork() {
         const fileInput = document.querySelector(".file-input") as HTMLInputElement
         const file = fileInput.files as FileList
         song_create.formData?.append('image', file[0])
-        navigate('/create')
+        navigate('/create/' + type)
     }
 
     useEffect(() => {

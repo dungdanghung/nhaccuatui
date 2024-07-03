@@ -4,7 +4,7 @@ import Header from "../../components/header"
 import Sidebar from "../../components/sidebar"
 import MusicController from "../../components/musicController"
 
-export default function LayoutManager() {
+export default function LayoutManager({ play_controller = false }) {
     return (
         <>
             <div className='manager-layout'>
@@ -19,9 +19,14 @@ export default function LayoutManager() {
                         </div>
                     </div>
                 </div>
-                <div>
-                    <MusicController />
-                </div>
+                {
+                    play_controller ?
+                        <div>
+                            <MusicController />
+                        </div> :
+                        <></>
+                }
+
             </div>
         </>
 

@@ -4,41 +4,36 @@ import { useEffect, useState, useRef } from "react"
 import { useAppContext } from "../../context"
 import { AddHeart, AddComment, GetComments } from "../../api/post"
 
-function Profile_Item({ data, itembirthday = false }: any) {
+function Profile_Item({ data, itembirthday = false, type }: any) {
     const [comment, setcomment] = useState<string>("")
     const heightofinputcomment = useRef<HTMLTextAreaElement>(null)
     const { media, post } = useAppContext()
 
     function handlediskplay(e: any) {
-        const wrap_disk = e.target.children[0]
-        const disk = e.target.children[1]
-        const pause = e.target.className.includes('pause') ? true : false
-        if (pause) {
-            wrap_disk.style.left = '41%'
-            disk.style.left = '50%'
-            e.target.classList.remove('pause')
-            e.target.classList.add('play')
-            const item_active = document.querySelector('.active') as HTMLDivElement
-            if (item_active) {
-                item_active.classList.remove('active')
-            }
-            e.target.classList.add('active')
-            media.set({
-                'id': undefined,
-                "title": undefined,
-                "artists": undefined,
-                "audio": data['media'],
-                "image": undefined,
-                "heart": undefined
-            })
+        if (type != 'post') {
+            const wrap_disk = e.target.children[0]
+            const disk = e.target.children[1]
+            const pause = e.target.className.includes('pause') ? true : false
+            if (pause) {
+                wrap_disk.style.left = '41%'
+                disk.style.left = '50%'
+                e.target.classList.remove('pause')
+                e.target.classList.add('play')
+                const item_active = document.querySelector('.active') as HTMLDivElement
+                if (item_active) {
+                    item_active.classList.remove('active')
+                }
+                e.target.classList.add('active')
+                media.set(data)
 
-            media.setplay(true)
-        } else {
-            wrap_disk.style.left = '50%'
-            disk.style.left = '25%'
-            e.target.classList.remove('play')
-            e.target.classList.add('pause')
-            media.setplay(false)
+                media.setplay(true)
+            } else {
+                wrap_disk.style.left = '50%'
+                disk.style.left = '25%'
+                e.target.classList.remove('play')
+                e.target.classList.add('pause')
+                media.setplay(false)
+            }
         }
     }
 
@@ -57,10 +52,10 @@ function Profile_Item({ data, itembirthday = false }: any) {
         return `${newdate_split[0]} Tháng ${newdate_split[1]}, ${newdate_split[2]}`
     }
 
-    function heart_click() {
-        AddHeart(data['id'])
-        const heart = document.querySelector('.heart i') as HTMLImageElement
-        const count_heart = document.querySelector('.countofheart span') as HTMLSpanElement
+    function heart_click(e: any) {
+        AddHeart(data['id'], type == 'media' ? 'song' : 'post')
+        const heart = document.querySelector(`.heart${data['id']} i`) as HTMLImageElement
+        const count_heart = document.querySelector(`.countofheart${data['id']} span`) as HTMLSpanElement
         if (heart.className.includes('fas')) {
             heart.classList.remove('fas')
             heart.classList.add('far')
@@ -93,7 +88,7 @@ function Profile_Item({ data, itembirthday = false }: any) {
 
     function showAllComment() {
         post.set(data);
-        GetComments(data['id'])
+        GetComments(data['id'], type == 'media' ? 'song' : 'post')
             .then((rs) => {
                 post.setComment(rs)
             })
@@ -148,26 +143,26 @@ function Profile_Item({ data, itembirthday = false }: any) {
                 itembirthday ? <></> :
                     <>
                         <div className="action">
-                            <div className="wrapaction">
-                                <div className="heart" onClick={heart_click}>
+                            <div className="wrapaction" style={{ gap: '15px' }}>
+                                <div className={`heart${data['id']}`} onClick={heart_click}>
                                     {
                                         data['check_heart'] ?
                                             <i className="fas fa-heart"></i> :
                                             <i className="far fa-heart"></i>
                                     }
                                 </div>
-                                <div className="comment">
-                                    <i className="fas fa-comments"></i>
-                                </div>
-                                {/* <div className="share">
-                        <i className="fas fa-paper-plane"></i>
-                    </div> */}
+                                {
+                                    type == 'post' ?
+                                        <div className="comment">
+                                            <i className="fas fa-comments"></i>
+                                        </div>
+                                        : <></>
+                                }
+
                             </div>
-                            {/* <div className="save">
-                    <i className="fas fa-bookmark"></i>
-                </div> */}
+
                         </div>
-                        <div className="countofheart">
+                        <div className={`countofheart${data['id']}`} style={{ color: '#fff', margin: '15px 0' }}>
                             <span>{data['heart']} Lượt thích</span>
                         </div>
                     </>
@@ -181,7 +176,7 @@ function Profile_Item({ data, itembirthday = false }: any) {
                     </div>
             }
             {
-                itembirthday ? <></> :
+                itembirthday || type == 'media' ? <></> :
                     <>
                         <div className="countcomment" onClick={showAllComment}>
                             <span>Xem tất cả bình luận</span>
@@ -203,7 +198,7 @@ function Profile_Item({ data, itembirthday = false }: any) {
                     </>
             }
 
-        </div>
+        </div >
     )
 }
 

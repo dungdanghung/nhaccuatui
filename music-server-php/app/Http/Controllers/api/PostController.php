@@ -12,6 +12,7 @@ use function Laravel\Prompts\error;
 use App\Http\Controllers\Controller;
 use App\Models\CommentPost;
 use App\Models\InteractSong;
+use App\Models\Song;
 use Illuminate\Support\Facades\Storage;
 
 use Spatie\Activitylog\Models\Activity;
@@ -26,10 +27,10 @@ class PostController extends Controller
             return Reply::error(__('messages.you_do_not_have_the_right_to_use_this_feature'));
         }
         $rules = [
-            'text_content' => 'required|string',
-            // 'file_song' => 'required|file|mimes:mp3|max:51200',
+            'text_content' => 'string',
+            // 'file_song' => 'file|mimes:mp3|max:51200',
             // 'status' => 'accept',
-            // 'file_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:4048',
+            // 'file_image' => 'image|mimes:jpeg,png,jpg,gif|max:4048',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -39,17 +40,22 @@ class PostController extends Controller
 
         DB::beginTransaction();
         try {
-            $nameAudio = auth()->user()->username . time() . '.' . $request->file('file_song')->getClientOriginalExtension();
-            Storage::disk('local')->putFileAs('uploads/song', $request->file('file_song'), $nameAudio);
-            Storage::disk('public')->putFileAs('uploads/song', $request->file('file_song'), $nameAudio);
-
-            $nameImage = auth()->user()->username . time() . '.' . $request->file('file_image')->getClientOriginalExtension();
-            Storage::disk('local')->putFileAs('uploads/image/1280x720', $request->file('file_image'), $nameImage);
-            Storage::disk('public')->putFileAs('uploads/image/1280x720', $request->file('file_image'), $nameImage);
+            $nameAudio = '';
+            $nameImage = '';
+            if ($request->file('file_song')) {
+                $nameAudio = auth()->user()->username . time() . '.' . $request->file('file_song')->getClientOriginalExtension();
+                Storage::disk('local')->putFileAs('uploads/song', $request->file('file_song'), $nameAudio);
+                Storage::disk('public')->putFileAs('uploads/song', $request->file('file_song'), $nameAudio);
+            }
+            if ($request->file('file_image')) {
+                $nameImage = auth()->user()->username . time() . '.' . $request->file('file_image')->getClientOriginalExtension();
+                Storage::disk('local')->putFileAs('uploads/image/1280x720', $request->file('file_image'), $nameImage);
+                Storage::disk('public')->putFileAs('uploads/image/1280x720', $request->file('file_image'), $nameImage);
+            }
 
             Post::create([
                 'user_id' => auth()->user()->id,
-                'text_content' => $request->text_content,
+                'text_content' => !empty($request->text_content) ? $request->text_content : "",
                 'file_song' => $nameAudio,
                 'file_image' => $nameImage,
             ]);
@@ -61,30 +67,51 @@ class PostController extends Controller
     }
 
 
-    public function getPosts()
+    public function getPosts($user_ID)
     {
-        $user = auth()->user();
-        if (!$user->hasPermissionTo('view_post') || $user->status == "disable") {
+        $user = User::where('id', $user_ID)->where('status', 'enable')->first();
+        if (!$user->hasPermissionTo('view_post') || $user->status == "disable" || empty($user_ID)) {
             return Reply::error(__('messages.you_do_not_have_the_right_to_use_this_feature'));
         }
 
-        $posts = Post::where('user_id', $user->id)->orderBy('created_at', 'desc')->limit(20)->get();
+        $activitys = Activity::where('causer_id', $user->id)->where('event', 'created')->whereIn('subject_type', ['App\Models\Song', 'App\Models\Post'])->orderBy('created_at', 'desc')->get();
+
         $format_posts = [];
-        foreach ($posts as $post) {
-            $check_post = $post->interact_heart->where('song_id', $post->id)->where('user_id', $user->id)->first();
-            array_push($format_posts, [
-                'id' => $post->id,
-                'media' => $post->file_song,
-                'image' => $post->file_image,
-                'text_content' => $post->text_content,
-                'create_time' => $post->created_at,
-                'avatar' => $user->avatar,
-                'user_name' => $user->user_name,
-                'heart' => $post->heart,
-                'count_of_share' => $post->count_of_share,
-                'count_of_comment' => $post->count_of_comment,
-                'check_heart' => $check_post ? true : false
-            ]);
+        foreach ($activitys as $post) {
+            if ($post['subject_type'] == 'App\Models\Post') {
+                $data = Post::where('id', $post->properties['attributes']['id'])->first();
+            } else $data = Song::where('id', $post->properties['attributes']['id'])->first();
+
+
+            if ($post['subject_type'] == 'App\Models\Post') {
+                $check_post = InteractSong::where('song_id', $data['id'])->where('type', 'add_heart_post')->where('user_id', $user->id)->first();
+                array_push($format_posts, [
+                    'id' => $data['id'],
+                    'audio' => $data['file_song'],
+                    'text_content' => $data['text_content'],
+                    'type' => $data['file_song'] ? 'post_media' : 'post',
+                    'image' => $data['file_image'],
+                    'create_time' => $data['created_at'],
+                    'avatar' => $user->avatar,
+                    'user_name' => $user->user_name,
+                    'heart' => $data['heart'],
+                    'check_heart' => $check_post ? true : false
+                ]);
+            } else if ($data['status'] == 'accept' && $post['subject_type'] == 'App\Models\Song') {
+                $check_post = InteractSong::where('song_id', $data['id'])->where('type', 'add_heart_song')->where('user_id', $user->id)->first();
+                array_push($format_posts, [
+                    'id' => $data['id'],
+                    'type' => 'media',
+                    'audio' => $data['audio'],
+                    'artists' => $data['artists'],
+                    'image' => $data['image'],
+                    'create_time' => $data['created_at'],
+                    'avatar' => $user->avatar,
+                    'user_name' => $user->user_name,
+                    'heart' => $data['heart'],
+                    'check_heart' => $check_post ? true : false
+                ]);
+            }
         }
         return response()->json($format_posts);
     }
@@ -99,20 +126,39 @@ class PostController extends Controller
 
         DB::beginTransaction();
         try {
-            $post = Post::where('id', $request->post_id)->first();
-            if (!empty($post)) {
-                $interact = $post->interact_heart->where('song_id', $post->id)->where('user_id', $user->id)->first();
-                $post->update([
-                    'heart' => $interact ? $post->heart - 1 : $post->heart + 1
-                ]);
-                if ($interact) {
-                    $interact->delete();
-                } else {
-                    InteractSong::create([
-                        'user_id' => $user->id,
-                        'song_id' => $post->id,
-                        'type' => 'add_heart_post'
+            if ($request->type == 'post') {
+                $post = Post::where('id', $request->post_id)->first();
+                if (!empty($post)) {
+                    $interact = $post->interact_heart->where('song_id', $post->id)->where('type', 'add_heart_post')->where('user_id', $user->id)->first();
+                    $post->update([
+                        'heart' => $interact ? $post->heart - 1 : $post->heart + 1
                     ]);
+                    if ($interact) {
+                        $interact->delete();
+                    } else {
+                        InteractSong::create([
+                            'user_id' => $user->id,
+                            'song_id' => $post->id,
+                            'type' => 'add_heart_post'
+                        ]);
+                    }
+                }
+            } else if ($request->type == 'song') {
+                $song = Song::where('id', $request->post_id)->first();
+                if (!empty($song)) {
+                    $interact = $song->interact_heart->where('song_id', $song->id)->where('type', 'add_heart_song')->where('user_id', $user->id)->first();
+                    $song->update([
+                        'heart' => $interact ? $song->heart - 1 : $song->heart + 1
+                    ]);
+                    if ($interact) {
+                        $interact->delete();
+                    } else {
+                        InteractSong::create([
+                            'user_id' => $user->id,
+                            'song_id' => $song->id,
+                            'type' => 'add_heart_song'
+                        ]);
+                    }
                 }
             }
             DB::commit();
@@ -165,7 +211,7 @@ class PostController extends Controller
         return Reply::success();
     }
 
-    public function getComments($id)
+    public function getComments($id, $type)
     {
         $user = auth()->user();
         if (!$user->hasPermissionTo('view_comment') || $user->status == "disable") {

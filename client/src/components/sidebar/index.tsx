@@ -107,14 +107,18 @@ export default function Sidebar({ type_sidebar = "main" }) {
                         type_sidebar == "manager" ? <>
                             <div className={style["sidebar__managers"]}>
                                 <ul className={style["sidebar__list"]}>
-                                    <Link to={'/manager/music'} className={[style["sidebar__item"], style["js__sidebar-tabs"], style["js__main-color sidebar__item--active"]].join(' ')}>
+                                    <a href={'/manager/dashboard'} className={[style["sidebar__item"], style["js__sidebar-tabs"], style["js__main-color sidebar__item--active"]].join(' ')}>
+                                        <i className={["far", "fa-play-circle", style["sidebar__item_icon"]].join(' ')}></i>
+                                        User
+                                    </a>
+                                    <a href={'/manager/music'} className={[style["sidebar__item"], style["js__sidebar-tabs"], style["js__main-color sidebar__item--active"]].join(' ')}>
                                         <i className={["far", "fa-play-circle", style["sidebar__item_icon"]].join(' ')}></i>
                                         Music
-                                    </Link>
-                                    <Link to={'/manager/mv'} className={[style["sidebar__item"], style["js__sidebar-tabs"], style["js__main-color sidebar__item--active"]].join(' ')}>
+                                    </a>
+                                    <a href={'/manager/mv'} className={[style["sidebar__item"], style["js__sidebar-tabs"], style["js__main-color sidebar__item--active"]].join(' ')}>
                                         <i className={["far", "fa-play-circle", style["sidebar__item_icon"]].join(' ')}></i>
                                         MV
-                                    </Link>
+                                    </a>
                                 </ul>
                             </div>
                         </> : <></>

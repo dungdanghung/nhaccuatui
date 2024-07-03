@@ -231,14 +231,23 @@ class MVController extends Controller
         }
 
         try {
-            $mv = MV::orderBy('created_at', 'desc')
+            $mvs = MV::orderBy('created_at', 'desc')
                 ->limit(30)
                 ->get();
+            $format_mv = [];
+            foreach ($mvs as $mv) {
+                array_push($format_mv, [
+                    'id' => $mv->id,
+                    'user_name' => $mv->user->user_name,
+                    'date' => Carbon::parse($mv->created_at),
+                    'status' => $mv->status
+                ]);
+            }
         } catch (\Throwable $th) {
             return Reply::error(__('messages.something_went_wrong'));
         }
 
-        return response()->json($mv);
+        return response()->json($format_mv);
     }
 
 

@@ -21,6 +21,32 @@ main.zm-section>.container {
     min-height: calc(100% - 158px);
 }
 
+.custom_btn_lyric_show {
+    display: flex !important;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px !important;
+}
+
+tbody,
+table {
+    border-radius: 8px;
+    overflow: hidden;
+    font-size: 18px;
+
+    tr {
+        font-size: 18px;
+
+        td,
+        th {
+            padding: 20px 0 20px 20px !important;
+            /* display: flex; */
+        }
+    }
+}
+
 .container {
     flex-grow: 1;
     margin: 0 auto;
@@ -566,8 +592,10 @@ a:hover {
             align-items: center;
             height: 60px;
             margin-top: 15px;
+            position: relative;
 
             .wrap_img {
+                z-index: 3;
                 height: 50px;
                 width: 50px;
                 border-radius: 50%;
@@ -580,6 +608,10 @@ a:hover {
                     font-size: 16px;
                     color: #fff;
                 }
+            }
+
+            .songs-item-right {
+                position: absolute;
             }
         }
     }
@@ -595,6 +627,7 @@ a:hover {
     .wrap_video {
         position: fixed;
         top: 0;
+        z-index: 7;
         left: 0;
         right: 0;
         bottom: 0;
@@ -753,5 +786,20 @@ a:hover {
                 }
             }
         }
+    }
+}
+
+
+.fixed-table-toolbar {
+    display: flex;
+    justify-content: end;
+    margin: 15px 0;
+
+    input {
+        height: 34px;
+        width: 200px;
+        font-size: 16px;
+        outline: none;
+        border: none;
     }
 }

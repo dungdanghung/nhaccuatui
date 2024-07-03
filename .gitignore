@@ -18,4 +18,6 @@ yarn-error.log
 /.idea
 /.vscode
 /client/node_modules
+/client/.env
 /music-server-php/vendor
+/music-server-nodejs/node_modules

@@ -178,7 +178,7 @@ export default function PlayList() {
 
                                         <div className="songs-item-left-body">
                                             <h3 className="songs-item-left-body-name js__main-color">{item['title']}</h3>
-                                            <span className="songs-item-left-body-singer js__sub-color">{JSON.parse(item['artists']).join(' ')}</span>
+                                            {/* <span className="songs-item-left-body-singer js__sub-color">{JSON.parse(item['artists']).join(' ')}</span> */}
                                         </div>
                                     </div>
 
@@ -221,7 +221,7 @@ export default function PlayList() {
                                             </div >
                                             <div className="songs-item-left-body">
                                                 <h3 className="songs-item-left-body-name js__main-color">{item['title']}</h3>
-                                                <span className="songs-item-left-body-singer js__sub-color">{JSON.parse(item['artists']).join(' ')}</span>
+                                                {/* <span className="songs-item-left-body-singer js__sub-color">{JSON.parse(item['artists']).join(' ')}</span> */}
                                             </div>
                                         </div >
                                     </li >
@@ -262,7 +262,7 @@ export default function PlayList() {
 
                                             <div className="songs-item-left-body">
                                                 <h3 className="songs-item-left-body-name js__main-color">{item['title']}</h3>
-                                                <span className="songs-item-left-body-singer js__sub-color">{JSON.parse(item['artists']).join(' ')}</span>
+                                                {/* <span className="songs-item-left-body-singer js__sub-color">{JSON.parse(item['artists']).join(' ')}</span> */}
                                             </div>
                                         </div>
 

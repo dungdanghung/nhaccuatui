@@ -40,6 +40,18 @@ export async function GetSongDetail(id: string | undefined) {
     }
 }
 
+export async function GetSongMediaDetail(id: string | undefined) {
+    try {
+        const rs = await request.post("/music/get-song-detail-manager", { "id": id })
+        if (rs.data) {
+            return rs.data
+        }
+    } catch (error: any) {
+        console.log('\x1b[31m%s\x1b[0m', `err users data: ${error.message}`)
+        throw new Error(error.message);
+    }
+}
+
 export async function EditSongDetail(data: any) {
     try {
         const rs = await request.post("/music/editsongdetail", data)
@@ -58,7 +70,7 @@ export async function SetStatusSong(id: any, status: any) {
         if (rs.data) {
             rs.data['status'] = status
             return rs.data
-        }
+        } else return false
     } catch (error: any) {
         console.log('\x1b[31m%s\x1b[0m', `err users data: ${error.message}`)
         throw new Error(error.message);
@@ -143,6 +155,17 @@ export async function Search(value = '') {
     }
 }
 
+export async function SearchManager(value = '') {
+    try {
+        const rs = await request.get("/music/searchManager/" + value)
+        if (rs.data) {
+            return rs.data
+        }
+    } catch (error: any) {
+        console.log('\x1b[31m%s\x1b[0m', `err users data: ${error.message}`)
+        throw new Error(error.message);
+    }
+}
 
 export async function SearchSong(value: any) {
     try {

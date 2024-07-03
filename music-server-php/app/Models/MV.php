@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class MV
- * 
+ *
  * @property int $id
  * @property string $title
  * @property string $video
@@ -28,21 +28,26 @@ use Illuminate\Database\Eloquent\Model;
  */
 class MV extends Model
 {
-	protected $table = '_m_v';
+    protected $table = '_m_v';
 
-	protected $casts = [
-		'user_id' => 'int',
-		'originaly_released' => 'datetime'
-	];
+    protected $casts = [
+        'user_id' => 'int',
+        'originaly_released' => 'datetime'
+    ];
 
-	protected $fillable = [
-		'title',
-		'video',
-		'image',
-		'user_id',
-		'originaly_released',
-		'discription',
-		'status',
-		'composition_copyright'
-	];
+    protected $fillable = [
+        'title',
+        'video',
+        'image',
+        'user_id',
+        'originaly_released',
+        'discription',
+        'status',
+        'composition_copyright'
+    ];
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
 }
