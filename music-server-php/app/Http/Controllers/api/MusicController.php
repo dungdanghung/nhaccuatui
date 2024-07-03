@@ -92,6 +92,7 @@ class MusicController extends Controller
         if (!auth()->user()->hasPermissionTo('upload_song')) {
             return Reply::error(__('messages.you_do_not_have_the_right_to_use_this_feature'));
         }
+
         $rules = [
             'language' => 'required',
             'title' => 'required',
@@ -99,7 +100,7 @@ class MusicController extends Controller
             'primary_genre' => 'required',
             'secondary_genre' => 'required',
             'composition_copyright' => 'required',
-            // 'record_laber_name' => 'required',
+            'record_laber_name' => 'required',
             'originaly_released' => 'required|date_format:Y-m-d',
             'audio' => 'required|file|mimes:mp3|max:51200',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:4048',
@@ -398,12 +399,17 @@ class MusicController extends Controller
         }
         $format_songs = [];
         foreach ($songs as $song) {
+<<<<<<< HEAD
             $interact = null;
             $checkPlaylist = null;
             if ($user) {
                 $interact = $song->song->interact_heart->where('song_id', $song->id)->where('user_id', $user->id)->where('type', 'add_heart_song')->first();
                 $checkPlaylist = $song->song->playlist->where('song_id', $song->id)->where('user_id', $user->id)->first();
             }
+=======
+            $interact = $song->song->interact_heart->where('song_id', $song->id)->where('user_id', $user->id)->where('type', 'add_heart_song')->first();
+            $checkPlaylist = $song->song->playlist->where('song_id', $song->id)->where('user_id', $user->id)->first();
+>>>>>>> a96d91a35bda4d9be7c428a31f30fbe985a5bd5c
             array_push($format_songs, [
                 'id' => $song->song->id,
                 'title' => $song->song->title,
@@ -669,6 +675,7 @@ class MusicController extends Controller
         }
         return response()->status(200);
     }
+<<<<<<< HEAD
 
     public function getMediaDetail(Request $request)
     {
@@ -697,4 +704,6 @@ class MusicController extends Controller
 
         return response()->json($song);
     }
+=======
+>>>>>>> a96d91a35bda4d9be7c428a31f30fbe985a5bd5c
 }

@@ -59,6 +59,7 @@ Route::prefix('/music')->controller(MusicController::class)->group(function () {
     Route::post('add_view', 'addView')->middleware('auth:sanctum');
     Route::get('song_history', 'getListHistory')->middleware('auth:sanctum');
     Route::post('update-song-interact', 'updateHotSong');
+<<<<<<< HEAD
 });
 
 Route::prefix('/manager')->controller(ManagerController::class)->group(function () {
@@ -85,6 +86,8 @@ Route::prefix('/manager')->controller(ManagerController::class)->group(function 
     Route::get('/getFeaturedMV', 'getFeaturedMV')->middleware('auth:sanctum');
 
     Route::get('/getCountDetail', 'getDetailMnager')->middleware('auth:sanctum');
+=======
+>>>>>>> a96d91a35bda4d9be7c428a31f30fbe985a5bd5c
 });
 
 Route::prefix('/mv')->controller(MVController::class)->group(function () {

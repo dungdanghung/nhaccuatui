@@ -25,9 +25,13 @@
     display: none;
 }
 
+<<<<<<< HEAD
 #country,
 #secondary_genre,
 #primary_genre {
+=======
+#country {
+>>>>>>> a96d91a35bda4d9be7c428a31f30fbe985a5bd5c
     width: 100%;
     height: 100%;
     border: none;

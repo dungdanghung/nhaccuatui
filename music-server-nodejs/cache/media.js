@@ -51,7 +51,10 @@ async function initializeMedia() {
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> a96d91a35bda4d9be7c428a31f30fbe985a5bd5c
 async function repeatedFunction(view_in_time_start) {
     while (true) {
         // const view_in_time_end = new Date()
@@ -79,7 +82,12 @@ async function repeatedFunction(view_in_time_start) {
         // } catch (error) {
         //     console.error('Error: ' + error.message);
         // }
+<<<<<<< HEAD
         await delay(10 * 60 * 1000);
+=======
+        // await delay(10 * 60 * 1000);
+        await delay(4000);
+>>>>>>> a96d91a35bda4d9be7c428a31f30fbe985a5bd5c
     }
 
 }

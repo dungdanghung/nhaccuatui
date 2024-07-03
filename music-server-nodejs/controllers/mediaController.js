@@ -4,7 +4,11 @@ const Media = require('../models/media')
 
 
 async function index(req, res) {
+<<<<<<< HEAD
     console.log(medias.get(parseInt(req.body.id)))
+=======
+    // console.log(medias.get(req.body.id))
+>>>>>>> a96d91a35bda4d9be7c428a31f30fbe985a5bd5c
     return res.json(medias.get(parseInt(req.body.id)))
 }
 
@@ -51,6 +55,7 @@ async function add_view_in_time(req, res) {
 }
 
 async function update(req, res) {
+<<<<<<< HEAD
     const media_id = parseInt(req.body.song['id'])
     if (!media_id) return res.status(400).json({ 'message': 'error' })
     const media = medias.get(media_id)
@@ -82,6 +87,32 @@ async function update(req, res) {
         data.created_at, data.updated_at, data.delete_ad)
 
     medias.set(req.body.song.id, new_media)
+=======
+    const media_id = parseInt(req.body.song.id)
+    if (!media_id) return res.status(400).json({ 'message': 'error' })
+    const media = medias.get(media_id)
+    if (!media) return res.status(400).json({ 'message': 'error' })
+    medias.findKey((item) => {
+        if (item.ID == media_id) {
+            item.title = req.body.song.title,
+                item.artists = req.body.song.artists,
+                item.language = req.body.song.language,
+                item.primary_genre = req.body.song.primary_genre,
+                item.secondary_genre = req.body.song.secondary_genre,
+                item.composition_copyright = req.body.song.composition_copyright,
+                item.record_laber_name = req.body.song.record_laber_name,
+                item.originaly_released = req.body.song.originaly_released,
+                item.audio = req.body.song.audio,
+                item.image = req.body.song.image,
+                item.thumbnail = req.body.song.thumbnail,
+                item.lyric_file = req.body.song.lyric_file ? req.body.song.lyric_file : null,
+                item.status = req.body.song.status,
+                item.user_id = req.body.song.user_id,
+                item.discription = req.body.song.discription ? req.body.song.discription : '',
+                item.updated_at = req.body.song.updated_at
+        }
+    })
+>>>>>>> a96d91a35bda4d9be7c428a31f30fbe985a5bd5c
     return res.status(200).json()
 }
 

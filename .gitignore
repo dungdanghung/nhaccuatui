@@ -18,6 +18,9 @@ yarn-error.log
 /.idea
 /.vscode
 /client/node_modules
+<<<<<<< HEAD
 /client/.env
+=======
+>>>>>>> a96d91a35bda4d9be7c428a31f30fbe985a5bd5c
 /music-server-php/vendor
 /music-server-nodejs/node_modules
